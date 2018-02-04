@@ -191,13 +191,29 @@ Test.add('equals note', function() {
   Test.assert(false, new Note('Db').equals(new Note('D#')));
 });
 
+Test.add('note interval', function() {
+  Test.assert(0, new Note('C').interval(new Note('C')));
+  Test.assert(1, new Note('C').interval(new Note('Db')));
+  Test.assert(2, new Note('C').interval(new Note('D')));
+  Test.assert(10, new Note('C').interval(new Note('Bb')));
+  Test.assert(11, new Note('C').interval(new Note('B')));
+  
+  Test.assert(0, new Note('Ab').interval(new Note('Ab')));
+  Test.assert(1, new Note('Ab').interval(new Note('A')));
+  Test.assert(3, new Note('Ab').interval(new Note('B')));
+  Test.assert(4, new Note('Ab').interval(new Note('C')));
+  Test.assert(5, new Note('Ab').interval(new Note('Db')));
+  Test.assert(10, new Note('Ab').interval(new Note('F#')));
+  Test.assert(11, new Note('Ab').interval(new Note('G')));
+});
+
 //---------------------------------------------------------------
 
 Test.add('create pitch', function() {
   Test.assert('C0', new Pitch(new Note('C'), 0).getName());
   Test.assert('B8', new Pitch(new Note('B'), 8).getName());
   Test.assert('G#5', new Pitch(new Note('G#'), 5).getName());
-  Test.assert('F#5', new Pitch(new Note('Gb'), 5).getName());
+  Test.assert('F#3', new Pitch(new Note('Gb'), 3).getName());
 });
 
 Test.add('create pitch negative tests', function() {
@@ -225,36 +241,105 @@ Test.add('create pitch negative tests', function() {
 });
 
 Test.add('get pitch name as flats', function() {
-  Test.assert(true, false, 'TODO');
+  Test.assert('C0', new Pitch(new Note('C'), 0).getName(true));
+  Test.assert('B8', new Pitch(new Note('B'), 8).getName(true));
+  Test.assert('Ab3', new Pitch(new Note('G#'), 3).getName(true));
+  Test.assert('Gb5', new Pitch(new Note('Gb'), 5).getName(true));
 });
 
 Test.add('transpose pitch', function() {
-  Test.assert(true, false, 'TODO');
+  Test.assert('D#4', new Pitch(new Note('C'), 4).transpose(3).getName());
+  Test.assert('E5', new Pitch(new Note('Bb'), 4).transpose(6).getName());
+  Test.assert('C1', new Pitch(new Note('B'), 0).transpose(1).getName());
+  Test.assert('B0', new Pitch(new Note('C'), 1).transpose(-1).getName());
+  
+  Test.assert('A#4', new Pitch(new Note('Ab'), 3).transpose(14).getName());
+  Test.assert('C#2', new Pitch(new Note('Eb'), 3).transpose(-14).getName());
+  
+  Test.assert('C0', new Pitch(new Note('C'), 0).transpose(0).getName());
+  Test.assert('B8', new Pitch(new Note('B'), 8).transpose(0).getName());
+  
+  Test.assert('B8', new Pitch(new Note('C'), 0).transpose(107).getName());
+  Test.assert('C0', new Pitch(new Note('B'), 8).transpose(-107).getName());
 });
 
 Test.add('transpose pitch negative tests', function() {
   var b = false;
   
-  //b = false;
-  //try { new Note(''); }
-  //catch (e) { b = true; }
-  //Test.assert(true, b, 'Should have gotten an exception trying to make a note named ""');
+  b = false;
+  try { new Pitch(new Note('B'), 8).transpose(1); }
+  catch (e) { b = true; }
+  Test.assert(true, b, 'Should have gotten an exception trying to transpose B8 higher');
   
-  Test.assert(true, false, 'TODO');
+  b = false;
+  try { new Pitch(new Note('C'), 0).transpose(-1); }
+  catch (e) { b = true; }
+  Test.assert(true, b, 'Should have gotten an exception trying to transpose C0 lower');
+  
+  b = false;
+  try { new Pitch(new Note('C'), 0).transpose(108); }
+  catch (e) { b = true; }
+  Test.assert(true, b, 'Should have gotten an exception trying to transpose C0 to C9');
+  
+  b = false;
+  try { new Pitch(new Note('B'), 8).transpose(-108); }
+  catch (e) { b = true; }
+  Test.assert(true, b, 'Should have gotten an exception trying to transpose B8 to B-1');
+  
 });
 
 Test.add('equals pitch', function() {
-  Test.assert(true, false, 'TODO');
+  Test.assert(true, new Pitch(new Note('Db'), 4).equals(new Pitch(new Note('C#'), 4)));
+  Test.assert(false, new Pitch(new Note('C'), 4).equals(new Pitch(new Note('C'), 3)));
 });
 
 //---------------------------------------------------------------
 
 Test.add('get chord name - C', function() {
+  //helper function to build a chord less tediously...
+  var crd = function(noteList) {
+    return new Chord(noteList.split(' ').map(s => new Note(s)));
+  }
+  var c = new Note('C');
+  
+  //single-note "chord"
+  Test.assert('C', crd('C').getName(c).name);
+  
+  //two-note "chord"
+  Test.assert('C5', crd('C G').getName(c).name);
+  //more...
   
   //major chord
-  Test.assert('C', new Chord([new Note('C'), new Note('E'), new Note('G')]).getName(new Note('C')).name);
-  Test.assert('Cm7', new Chord([new Note('C'), new Note('Eb'), new Note('G'), new Note('Bb')]).getName(new Note('C')).name);
+  Test.assert('C', crd('C E G').getName(c).name);
   
-  Test.assert(true, false, 'TODO');
+  //minor chord
+  Test.assert('Cm', crd('C Eb G').getName(c).name);
+  
+  //some more
+  Test.assert('C7', crd('C E G Bb').getName(c).name);
+  Test.assert('Cm7', crd('C Eb G Bb').getName(c).name);
+  Test.assert('Cmaj7', crd('C E G B').getName(c).name);
+  Test.assert('Cm(maj7)', crd('C Eb G B').getName(c).name);
+  Test.assert('Caug7', crd('C E G# Bb').getName(c).name);
+  
+  Test.assert('Cdim', crd('C Eb Gb A').getName(c).name);
+  Test.assert('C7(b5)', crd('C Eb Gb Bb').getName(c).name);
+  
+  Test.assert('C9', crd('C E G Bb D').getName(c).name);
+  Test.assert('C11', crd('C E G Bb D F').getName(c).name);
+  Test.assert('C13', crd('C E G Bb D F A').getName(c).name);
+  
+  Test.assert('C6', crd('C E G A').getName(c).name);
+  Test.assert('C6/9', crd('C E G A D').getName(c).name);
+  Test.assert('C7/7', crd('C E G A Bb').getName(c).name);
+  
+  Test.assert('Cadd9', crd('C E G D').getName(c).name);
+  Test.assert('Cadd11', crd('C E G F').getName(c).name);
+  Test.assert('???', crd('C Eb E G').getName(c).name);
+  
+  Test.assert('Csus2', crd('C D G').getName(c).name);
+  Test.assert('Csus4', crd('C F G').getName(c).name);
+  Test.assert('C7sus4', crd('C F G Bb').getName(c).name);
+  Test.assert('C9sus4', crd('C F G Bb D').getName(c).name);
 });
 

@@ -58,6 +58,14 @@ function Note(note) {
   this.equals = function(that) {
     return (that instanceof Note && this.id == that.id);
   }
+  
+  /**
+   * Returns the interval from this note to that note, as an integer from 0-11. Assumes this note is the root.
+   * Another way of saying it: this is the number of half steps to get from this note to the next-highest that-note.
+   */
+  this.interval = function(that) {
+    return that.id - this.id + (this.id > that.id ? 12 : 0);
+  }
 }
 
 /**
@@ -115,19 +123,31 @@ function Chord(notes) {
     if(!(note instanceof Note))
       throw new Error(`Invalid note: ${note}`);
     //check for duplicate note?  will indexof work?
-    this.notes.push(note);
   });
+  this.notes = notes;
   if(this.notes.length === 0)
     throw new Error("Chord cannot be empty");
   
   
+  this.toString = function() { return this.notes.toString() };
+  
+  /**
+   * Returns all possible names of this chord, by returning determining the name of the chord with each note as root note.
+   */
   this.getNames = function(asFlat, verbose) {
     var names = [];
-    this.notes.forEach(function(note) { names.push(this.getName(note, asFlat, verbose)); });
+    var self = this;
+    this.notes.forEach(function(note) { names.push(self.getName(note, asFlat, verbose)); });
     return names;
   }
   
-  this.toString = function() { return this.notes.toString() };
+  
+  /**
+   * Returns whether this chord contains the given note.
+   */
+  this.hasNote = function(note) {
+    return (this.notes.findIndex(n => n.equals(note)) >= 0);
+  }
   
   this.getName = function(rootNote, asFlat, verbose) {
     //THIS IS WHERE THE MAGIC HAPPENS.
@@ -154,6 +174,17 @@ function Chord(notes) {
     //  verbose: [ 'assuming root is C', 'found a min3 - this is a minor chord', 'found 5th', 'found minor 7th' ]
     //}
     
+    //determine which intervals are present
+    var intervals = new Array(12).fill(false);
+    this.notes.forEach(note => intervals[rootNote.interval(note)] = true);
+      
+    //dummy for now... just return the name of the root note...
+    return {
+      name: rootNote.getName(asFlat),
+      notes: [
+        {interval: 'R', note: rootNote}
+      ]
+    };
   }
   
 }
