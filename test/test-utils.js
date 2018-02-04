@@ -21,13 +21,40 @@ function Test(name, fn) {
   }
 }
 
-/**
- * Asserts that expected === actual. Fails unit test if not.
- */
-Test.assert = function(expected, actual, message) {
-  if(expected !== actual)
-    throw new Error(`Test Failure - ${message} - Expected[${expected}], Actual=[${actual}]`);
+/** Fails a test with given error message. */
+Test.fail = function(message='') {
+  throw new Error(`Test Failure - ${message}`);
 }
+/** Asserts that expected === actual.  */
+Test.assert = function(expected, actual, message='') {
+  if(expected !== actual)
+    Test.fail(`${message} - Expected=[${expected}], Actual=[${actual}]`);
+}
+Test.assertTrue = function(value, message='') {
+  if(value !== true)
+    Test.fail(`${message} - value was not true: ${value}`);
+}
+Test.assertFalse = function(value, message='') {
+  if(value !== false)
+    Test.fail(`${message} - value was not true: ${value}`);
+}
+Test.assertGTZero = function(value, message='') {
+  if(!Number.isFinite(value) || !(value > 0))
+    Test.fail(`${message} - value is not a finite number greater than zero: ${value}`);
+}
+Test.assertLTZero = function(value, message='') {
+  if(!Number.isFinite(value) || !(value < 0))
+    Test.fail(`${message} - value is not a finite number less than zero: ${value}`);
+}
+Test.assertGTEZero = function(value, message='') {
+  if(!Number.isFinite(value) || !(value >= 0))
+    Test.fail(`${message} - value is not a finite number greater than or equal to zero: ${value}`);
+}
+Test.assertLTEZero = function(value, message='') {
+  if(!Number.isFinite(value) || !(value <= 0))
+    Test.fail(`${message} - value is not a finite number less than or equal to zero: ${value}`);
+}
+
 
 /**
  * Adds a new test to list of tests to process. Does not run the test.
