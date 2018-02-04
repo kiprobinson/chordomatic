@@ -35,7 +35,7 @@ function Note(note) {
    * Returns the name of this note.
    * @param asFlat if passed as boolean true, the name will prefer a flat (i.e. 'Bb' instead of 'A#'). Otherwise prefers sharps.
    */
-  this.getName = function(asFlat) {
+  this.getName = function(asFlat=false) {
     if(asFlat)
       return NAMES_FLAT[this.id];
     return NAMES_SHARP[this.id];
@@ -84,7 +84,7 @@ function Pitch(note, octave) {
    * Returns the name of this pitch.
    * @param asFlat if passed as boolean true, the name will prefer a flat (i.e. 'Bb3' instead of 'A#3'). Otherwise prefers sharps.
    */
-  this.getName = function(asFlat) {
+  this.getName = function(asFlat=false) {
     return this.note.getName(asFlat) + octave;
   }
   
@@ -109,7 +109,7 @@ function Pitch(note, octave) {
   /**
    * Compares this pitch to that. Returns: Negative value if this < that, 0 if this == that, positive value if this > that.
    */
-  this.compare = function(that) {
+  this.compareTo = function(that) {
     if(this.octave !== that.octave)
       return this.octave - that.octave;
     
@@ -122,7 +122,6 @@ function Chord(notes) {
   notes.forEach(function(note) {
     if(!(note instanceof Note))
       throw new Error(`Invalid note: ${note}`);
-    //check for duplicate note?  will indexof work?
   });
   this.notes = notes;
   if(this.notes.length === 0)
@@ -134,7 +133,7 @@ function Chord(notes) {
   /**
    * Returns all possible names of this chord, by returning determining the name of the chord with each note as root note.
    */
-  this.getNames = function(asFlat, verbose) {
+  this.getNames = function(asFlat=false, verbose=false) {
     var names = [];
     var self = this;
     this.notes.forEach(function(note) { names.push(self.getName(note, asFlat, verbose)); });
@@ -149,7 +148,7 @@ function Chord(notes) {
     return (this.notes.findIndex(n => n.equals(note)) >= 0);
   }
   
-  this.getName = function(rootNote, asFlat, verbose) {
+  this.getName = function(rootNote, asFlat=false, verbose=false) {
     //THIS IS WHERE THE MAGIC HAPPENS.
     //return struct like:
     //{

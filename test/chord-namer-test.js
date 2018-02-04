@@ -293,6 +293,23 @@ Test.add('equals pitch', function() {
   Test.assert(false, new Pitch(new Note('C'), 4).equals(new Pitch(new Note('C'), 3)));
 });
 
+Test.add('compare pitches', function() {
+  Test.assert(0, new Pitch(new Note('Db'), 4).compareTo(new Pitch(new Note('C#'), 4)));
+  Test.assertGTZero(new Pitch(new Note('Db'), 4).compareTo(new Pitch(new Note('C'), 4)));
+  Test.assertLTZero(new Pitch(new Note('Db'), 4).compareTo(new Pitch(new Note('D'), 4)));
+  
+  //compare within octave, max range
+  Test.assertLTZero(new Pitch(new Note('C'), 4).compareTo(new Pitch(new Note('B'), 4)));
+  Test.assertGTZero(new Pitch(new Note('B'), 4).compareTo(new Pitch(new Note('C'), 4)));
+  
+  //compare across octaves
+  Test.assertLTZero(new Pitch(new Note('F#'), 2).compareTo(new Pitch(new Note('F#'), 3)));
+  Test.assertGTZero(new Pitch(new Note('F#'), 7).compareTo(new Pitch(new Note('F#'), 6)));
+  
+  Test.assertGTZero(new Pitch(new Note('C'), 4).compareTo(new Pitch(new Note('B'), 3)));
+  Test.assertLTZero(new Pitch(new Note('B'), 4).compareTo(new Pitch(new Note('C'), 5)));
+});
+
 //---------------------------------------------------------------
 
 Test.add('get chord name - C', function() {
