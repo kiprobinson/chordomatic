@@ -54,6 +54,13 @@ Test.assertLTEZero = function(value, message='') {
   if(!Number.isFinite(value) || !(value <= 0))
     Test.fail(`${message} - value is not a finite number less than or equal to zero: ${value}`);
 }
+Test.assertException = function(fn, message='') {
+  var b = false;
+  try { fn(); }
+  catch(e) { b = true; }
+  if(!b)
+    Test.fail(`${message} - Did not throw an exception where one was expected.`);
+}
 
 
 /**
