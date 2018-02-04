@@ -82,43 +82,16 @@ Test.add('get note names as flats', function() {
 });
 
 Test.add('negative tests for creating notes', function() {
-  var b = false;
-  
-  b = false;
-  try { new Note(''); }
-  catch (e) { b = true; }
-  Test.assertTrue(b, 'Should have gotten an exception trying to make a note named ""');
-  
-  b = false;
-  try { new Note(null); }
-  catch (e) { b = true; }
-  Test.assertTrue(b, 'Should have gotten an exception trying to make a note named null');
-  
-  b = false;
-  try { new Note('H'); }
-  catch (e) { b = true; }
-  Test.assertTrue(b, 'Should have gotten an exception trying to make a note named "H"');
+  Test.assertException(()=>new Note(''), 'make a note named ""');
+  Test.assertException(()=>new Note(null), 'make a note named null');
+  Test.assertException(()=>new Note('H'), 'make a note named "H"');
+  Test.assertException(()=>new Note(0.5), 'make a note with id 0.5');
   
   //these are technically valid but I haven't implemented... maybe someday...
-  b = false;
-  try { new Note('Cb'); }
-  catch (e) { b = true; }
-  Test.assertTrue(b, 'Should have gotten an exception trying to make a note named "Cb"');
-  
-  b = false;
-  try { new Note('Bbb'); }
-  catch (e) { b = true; }
-  Test.assertTrue(b, 'Should have gotten an exception trying to make a note named "Bbb"');
-  
-  b = false;
-  try { new Note('B#'); }
-  catch (e) { b = true; }
-  Test.assertTrue(b, 'Should have gotten an exception trying to make a note named "B#"');
-  
-  b = false;
-  try { new Note('A##'); }
-  catch (e) { b = true; }
-  Test.assertTrue(b, 'Should have gotten an exception trying to make a note named "A##"');
+  Test.assertException(()=>new Note('Cb'), 'make a note named "Cb"');
+  Test.assertException(()=>new Note('Bbb'), 'make a note named "Bbb"');
+  Test.assertException(()=>new Note('B#'), 'make a note named "B#"');
+  Test.assertException(()=>new Note('A##'), 'make a note named "A##"');
 });
 
 Test.add('create note by id', function() {
@@ -217,27 +190,11 @@ Test.add('create pitch', function() {
 });
 
 Test.add('create pitch negative tests', function() {
-  var b = false;
-  
-  b = false;
-  try { new Pitch(new Note('B'), -1); }
-  catch (e) { b = true; }
-  Test.assertTrue(b, 'Should have gotten an exception trying to make a pitch with negative octave');
-  
-  b = false;
-  try { new Pitch(new Note('C'), 9); }
-  catch (e) { b = true; }
-  Test.assertTrue(b, 'Should have gotten an exception trying to make a pitch over octave 8');
-  
-  b = false;
-  try { new Pitch(null, 4); }
-  catch (e) { b = true; }
-  Test.assertTrue(b, 'Should have gotten an exception trying to make a pitch with null note');
-  
-  b = false;
-  try { new Pitch(new Note('C'), null); }
-  catch (e) { b = true; }
-  Test.assertTrue(b, 'Should have gotten an exception trying to make a pitch with null octave');
+  Test.assertException(()=>new Pitch(new Note('B'), -1), 'make a pitch with negative octave');
+  Test.assertException(()=>new Pitch(new Note('C'), 9), 'make a pitch over octave 8');
+  Test.assertException(()=>new Pitch(null, 4), 'make a pitch with null note');
+  Test.assertException(()=>new Pitch(new Note('C'), null), 'make a pitch with null octave');
+  Test.assertException(()=>new Pitch(new Note('C'), 2.5), 'make a pitch with non-integer octave');
 });
 
 Test.add('get pitch name as flats', function() {
@@ -264,28 +221,10 @@ Test.add('transpose pitch', function() {
 });
 
 Test.add('transpose pitch negative tests', function() {
-  var b = false;
-  
-  b = false;
-  try { new Pitch(new Note('B'), 8).transpose(1); }
-  catch (e) { b = true; }
-  Test.assertTrue(b, 'Should have gotten an exception trying to transpose B8 higher');
-  
-  b = false;
-  try { new Pitch(new Note('C'), 0).transpose(-1); }
-  catch (e) { b = true; }
-  Test.assertTrue(b, 'Should have gotten an exception trying to transpose C0 lower');
-  
-  b = false;
-  try { new Pitch(new Note('C'), 0).transpose(108); }
-  catch (e) { b = true; }
-  Test.assertTrue(b, 'Should have gotten an exception trying to transpose C0 to C9');
-  
-  b = false;
-  try { new Pitch(new Note('B'), 8).transpose(-108); }
-  catch (e) { b = true; }
-  Test.assertTrue(b, 'Should have gotten an exception trying to transpose B8 to B-1');
-  
+  Test.assertException(()=>new Pitch(new Note('B'), 8).transpose(1), 'Transpose B8 +1 half-step');
+  Test.assertException(()=>new Pitch(new Note('C'), 0).transpose(-1), 'Transpose C0 -1 half-step');
+  Test.assertException(()=>new Pitch(new Note('C'), 0).transpose(108), 'Transpose C0 to C9');
+  Test.assertException(()=>new Pitch(new Note('B'), 8).transpose(-108), 'Transpose B8 to B-1');
 });
 
 Test.add('equals pitch', function() {
@@ -323,8 +262,18 @@ Test.add('get chord name - C', function() {
   Test.assert('C', crd('C').getName(c).name);
   
   //two-note "chord"
+  Test.assert('??', crd('C Db').getName(c).name);
+  Test.assert('??', crd('C D').getName(c).name);
+  Test.assert('??', crd('C Eb').getName(c).name);
+  Test.assert('??', crd('C E').getName(c).name);
+  Test.assert('??', crd('C F').getName(c).name);
+  Test.assert('??', crd('C Gb').getName(c).name);
   Test.assert('C5', crd('C G').getName(c).name);
-  //more...
+  Test.assert('??', crd('C Ab').getName(c).name);
+  Test.assert('??', crd('C A').getName(c).name);
+  Test.assert('??', crd('C Bb').getName(c).name);
+  Test.assert('??', crd('C B').getName(c).name);
+  //need more...
   
   //major chord
   Test.assert('C', crd('C E G').getName(c).name);
