@@ -133,10 +133,10 @@ function Chord(notes) {
   /**
    * Returns all possible names of this chord, by returning determining the name of the chord with each note as root note.
    */
-  this.getNames = function(asFlat=false, verbose=false) {
+  this.getNames = function(asFlat=false) {
     var names = [];
     var self = this;
-    this.notes.forEach(function(note) { names.push(self.getName(note, asFlat, verbose)); });
+    this.notes.forEach(function(note) { names.push(self.getName(note, asFlat)); });
     return names;
   }
   
@@ -148,7 +148,7 @@ function Chord(notes) {
     return (this.notes.findIndex(n => n.equals(note)) >= 0);
   }
   
-  this.getName = function(rootNote, asFlat=false, verbose=false) {
+  this.getName = function(rootNote, asFlat=false) {
     //THIS IS WHERE THE MAGIC HAPPENS.
     //return struct like:
     //{
@@ -173,16 +173,40 @@ function Chord(notes) {
     //  verbose: [ 'assuming root is C', 'found a min3 - this is a minor chord', 'found 5th', 'found minor 7th' ]
     //}
     
+    var verbose = [];
+    var noteDetails = [];
+    
     //determine which intervals are present
     var intervals = new Array(12).fill(false);
     this.notes.forEach(note => intervals[rootNote.interval(note)] = true);
-      
+    
+    //interval ids
+    const ROOT = 0;
+    const FLAT_SECOND = 1;
+    const SECOND = 2;
+    const M_THIRD = 3;
+    const THIRD = 4;
+    const FOURTH = 5;
+    const FLAT_FIFTH = 6;
+    const FIFTH = 7;
+    const FLAT_SIXTH = 8;
+    const SIXTH = 9;
+    const FLAT_SEVENTH = 10;
+    const SEVENTH = 11;
+    
+    if(!intervals[ROOT]) {
+      verbose.push('root is not present. pretending like it is.')
+      intervals[ROOT] = true;
+    }
+    noteDetails.push({interval: 'R', note: rootNote});
+    
     //dummy for now... just return the name of the root note...
     return {
       name: rootNote.getName(asFlat),
       notes: [
         {interval: 'R', note: rootNote}
-      ]
+      ],
+      verbose: verbose
     };
   }
   
