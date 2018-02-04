@@ -1,2 +1,4 @@
 # chordomatic
-HTML5 Guitar Chord Finder/Player
+HTML5 Guitar Chord Identifier/Player
+
+***Work in progress!***
