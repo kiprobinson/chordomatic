@@ -174,17 +174,54 @@ Test.add('get note id', function() {
 });
 
 Test.add('transpose note', function() {
-  Test.assert(true, false, 'TODO');
+  Test.assert('E', new Note('C').transpose(4).getName());
+  Test.assert('C', new Note('E').transpose(-4).getName());
+  Test.assert('G', new Note('G').transpose(12).getName());
+  Test.assert('G', new Note('G').transpose(-12).getName());
+  Test.assert('C#', new Note('F#').transpose(7).getName());
+  Test.assert('F#', new Note('C#').transpose(-7).getName());
 });
 
 Test.add('equals note', function() {
-  Test.assert(true, false, 'TODO');
+  Test.assert(true, new Note('A').equals(new Note(9)));
+  Test.assert(true, new Note('G#').equals(new Note(20)));
+  Test.assert(true, new Note('Eb').equals(new Note(-21)));
+  Test.assert(true, new Note('Eb').equals(new Note('D#')));
+  Test.assert(false, new Note('Eb').equals(new Note('E')));
+  Test.assert(false, new Note('Db').equals(new Note('D#')));
 });
 
 //---------------------------------------------------------------
 
 Test.add('create pitch', function() {
-  Test.assert(true, false, 'TODO');
+  Test.assert('C0', new Pitch(new Note('C'), 0).getName());
+  Test.assert('B8', new Pitch(new Note('B'), 8).getName());
+  Test.assert('G#5', new Pitch(new Note('G#'), 5).getName());
+  Test.assert('F#5', new Pitch(new Note('Gb'), 5).getName());
+});
+
+Test.add('create pitch negative tests', function() {
+  var b = false;
+  
+  b = false;
+  try { new Pitch(new Note('B'), -1); }
+  catch (e) { b = true; }
+  Test.assert(true, b, 'Should have gotten an exception trying to make a pitch with negative octave');
+  
+  b = false;
+  try { new Pitch(new Note('C'), 9); }
+  catch (e) { b = true; }
+  Test.assert(true, b, 'Should have gotten an exception trying to make a pitch over octave 8');
+  
+  b = false;
+  try { new Pitch(null, 4); }
+  catch (e) { b = true; }
+  Test.assert(true, b, 'Should have gotten an exception trying to make a pitch with null note');
+  
+  b = false;
+  try { new Pitch(new Note('C'), null); }
+  catch (e) { b = true; }
+  Test.assert(true, b, 'Should have gotten an exception trying to make a pitch with null octave');
 });
 
 Test.add('get pitch name as flats', function() {
@@ -192,6 +229,17 @@ Test.add('get pitch name as flats', function() {
 });
 
 Test.add('transpose pitch', function() {
+  Test.assert(true, false, 'TODO');
+});
+
+Test.add('transpose pitch negative tests', function() {
+  var b = false;
+  
+  //b = false;
+  //try { new Note(''); }
+  //catch (e) { b = true; }
+  //Test.assert(true, b, 'Should have gotten an exception trying to make a note named ""');
+  
   Test.assert(true, false, 'TODO');
 });
 
