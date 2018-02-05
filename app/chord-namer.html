@@ -5,12 +5,82 @@
 <script src="chord-namer.js"></script>
 <script>
   $(function() {
-    
+    $('#notes').on('change', function() {
+      var notes = [];
+      $('#notes .note input:checked').each(function(){ notes.push(new Note(this.id)) });
+      console.log(notes.toString());
+      
+      if(notes.length == 0) {
+        $('#output').text('');
+        return;
+      }
+      
+      var chord = new Chord(notes);
+      var names = chord.getNames();
+      
+      var output = '';
+      names.forEach(function(nameInfo) {
+        output += `Root=${nameInfo.notes[0].note.getName()}  =>  ${nameInfo.name}\n`;
+        output += `  Intervals found:\n`;
+        nameInfo.notes.forEach((note)=> output += `    ${note.interval}: ${note.note.getName()}\n`);
+        
+        output += `  Reason for name:\n`;
+        nameInfo.verbose.forEach((s)=> output += `    ${s}\n`);
+        output += '\n';
+      });
+      
+      $('#output').text(output);
+    })
   });
 </script>
+<style>
+#notes {
+  font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,sans-serif;
+  font-weight: bold;
+  font-size: 40px;
+}
+#notes .note {
+  display: inline-block;
+  width: 50px;
+  height: 100px;
+}
+#notes .note label, #notes .note input {
+  display: block;
+  text-align: center;
+  width: 100%;
+  height: 50%;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+#output {
+  font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,sans-serif;
+  white-space: pre;
+  margin-top: 1.0em;
+}
+</style>
 </head>
 <body>
-  
-  <label for="C" />C</label>
+<h1>Chord-o-matic Chord Namer</h1>
+
+<div id="notes">
+  <div class="note"><label for="C" >C </label><input type="checkbox" id="C"  /></div>
+  <div class="note"><label for="C#">C#</label><input type="checkbox" id="C#" /></div>
+  <div class="note"><label for="D" >D </label><input type="checkbox" id="D"  /></div>
+  <div class="note"><label for="D#">D#</label><input type="checkbox" id="D#" /></div>
+  <div class="note"><label for="E" >E </label><input type="checkbox" id="E"  /></div>
+  <div class="note"><label for="F" >F </label><input type="checkbox" id="F"  /></div>
+  <div class="note"><label for="F#">F#</label><input type="checkbox" id="F#" /></div>
+  <div class="note"><label for="G" >G </label><input type="checkbox" id="G"  /></div>
+  <div class="note"><label for="G#">G#</label><input type="checkbox" id="G#" /></div>
+  <div class="note"><label for="A" >A </label><input type="checkbox" id="A"  /></div>
+  <div class="note"><label for="A#">A#</label><input type="checkbox" id="A#" /></div>
+  <div class="note"><label for="B" >B </label><input type="checkbox" id="B"  /></div>
+</div>
+
+
+<div id="output"></div>
+
 </body>
 </html>
