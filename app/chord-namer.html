@@ -8,7 +8,6 @@
     $('#notes').on('change', function() {
       var notes = [];
       $('#notes .note input:checked').each(function(){ notes.push(new Note(this.id)) });
-      console.log(notes.toString());
       
       if(notes.length == 0) {
         $('#output').text('');
