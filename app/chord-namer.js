@@ -367,6 +367,10 @@ function Chord(notes) {
       verbose.push('found a sharp fifth we have not used');
       added += 'add(#5)';
     }
+    if(intervals[SIXTH] && !consumed[SIXTH]) {
+      verbose.push('found a sixth we have not used');
+      added += 'add6';
+    }
     if(intervals[DOM_SEVENTH] && !consumed[DOM_SEVENTH]) {
       //probably shouldn't be able to get here i think?
       verbose.push('found a dominant seventh we have not used');
