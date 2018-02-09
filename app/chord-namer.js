@@ -327,42 +327,42 @@ function Chord(notes) {
     
     if(intervals[FLAT_SECOND] && !consumed[FLAT_SECOND]) {
       verbose.push('found a flat second we have not used');
-      added += '(add b2)';
+      added += 'add(b2)';
     }
     if(intervals[SECOND] && !consumed[SECOND]) {
       verbose.push('found a second we have not used');
-      added += '(add2)';
+      added += 'add2';
     }
     if(intervals[MIN_THIRD] && !consumed[MIN_THIRD]) {
       verbose.push('found a minor third we have not used');
-      added += '(add m3)';
+      added += 'add(m3)';
     }
     if(intervals[FOURTH] && !consumed[FOURTH]) {
       verbose.push('found a fourth we have not used');
-      added += '(add4)';
+      added += 'add4';
     }
     if(intervals[FLAT_FIFTH] && !consumed[FLAT_FIFTH]) {
       verbose.push('found a flat fifth we have not used');
-      added += '(add b5)';
+      added += 'add(b5)';
     }
     if(intervals[FIFTH] && !consumed[FIFTH]) {
       //probably shouldn't be able to get here i think?
       verbose.push('found a fifth we have not used');
-      added += '(add5)';
+      added += 'add5';
     }
     if(intervals[SHARP_FIFTH] && !consumed[SHARP_FIFTH]) {
       verbose.push('found a sharp fifth we have not used');
-      added += '(add#5)';
+      added += 'add(#5)';
     }
     if(intervals[DOM_SEVENTH] && !consumed[DOM_SEVENTH]) {
       //probably shouldn't be able to get here i think?
       verbose.push('found a dominant seventh we have not used');
-      added += '(add dom7)';
+      added += 'add(dom7)';
     }
     if(intervals[MAJ_SEVENTH] && !consumed[MAJ_SEVENTH]) {
       //probably shouldn't be able to get here i think?
       verbose.push('found a major seventh we have not used');
-      added += '(add maj7)';
+      added += 'add(maj7)';
     }
     
     //dummy for now... just return the name of the root note...
