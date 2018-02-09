@@ -286,7 +286,7 @@ Test.add('get chord name - C', function() {
   
   Test.assert('Caug', crd('C E G#').getName(c).name);
   
-  //some more
+  //sevenths
   Test.assert('C7', crd('C E G Bb').getName(c).name);
   Test.assert('Cm7', crd('C Eb G Bb').getName(c).name);
   Test.assert('Cmaj7', crd('C E G B').getName(c).name);
@@ -297,6 +297,14 @@ Test.add('get chord name - C', function() {
   Test.assert('Cm7(b5)', crd('C Eb Gb Bb').getName(c).name);
   Test.assert('Cdim(maj7)', crd('C Eb Gb B').getName(c).name);
   
+  //suspended
+  Test.assert('Csus2', crd('C D G').getName(c).name);
+  Test.assert('Csus4', crd('C F G').getName(c).name);
+  Test.assert('Csus2/4', crd('C D F G').getName(c).name);
+  Test.assert('C7sus4', crd('C F G Bb').getName(c).name);
+  Test.assert('C9sus4', crd('C F G Bb D').getName(c).name);
+  
+  //some more
   Test.assert('C9', crd('C E G D').getName(c).name); //is this right?
   Test.assert('C9', crd('C E G Bb D').getName(c).name); //is this right?
   Test.assert('C11', crd('C E G Bb D F').getName(c).name);
@@ -309,11 +317,6 @@ Test.add('get chord name - C', function() {
   Test.assert('Cadd9', crd('C E G D').getName(c).name);
   Test.assert('Cadd11', crd('C E G F').getName(c).name);
   Test.assert('Cadd(m3)', crd('C Eb E G').getName(c).name);
-  
-  Test.assert('Csus2', crd('C D G').getName(c).name);
-  Test.assert('Csus4', crd('C F G').getName(c).name);
-  Test.assert('C7sus4', crd('C F G Bb').getName(c).name);
-  Test.assert('C9sus4', crd('C F G Bb D').getName(c).name);
   
   //need more...
   

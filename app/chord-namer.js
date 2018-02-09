@@ -312,15 +312,28 @@ function Chord(notes) {
         quality = 'sus';
         if(intervals[SECOND] && intervals[FOURTH]) {
           verbose.push('found second and fourth. this is a sus2/4');
+          consumed[SECOND] = true;
+          consumed[FOURTH] = true;
           quality += '2/4';
         }
         else if(intervals[SECOND]) {
           verbose.push('found second. this is a sus2');
+          consumed[SECOND] = true;
           quality += '2';
         }
-        else if(intervals[SECOND]) {
-          verbose.push('found second. this is a sus2');
-          quality += '2';
+        else if(intervals[FOURTH]) {
+          verbose.push('found second. this is a sus4');
+          consumed[FOURTH] = true;
+          quality += '4';
+        }
+        
+        if(intervals[FIFTH]) {
+          verbose.push('found fifth');
+          consumed[FIFTH] = true;
+        }
+        else {
+          verbose.push('missing fifth');
+          omissions += '(no5)';
         }
       }
     }
