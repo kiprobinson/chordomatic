@@ -291,9 +291,9 @@ Test.add('get chord name - C', function() {
   Test.assert('Cm7', crd('C Eb G Bb').getName(c).name);
   Test.assert('Cmaj7', crd('C E G B').getName(c).name);
   Test.assert('Cm(maj7)', crd('C Eb G B').getName(c).name);
-  Test.assert('Caug7', crd('C E G# Bb').getName(c).name);
+  Test.assert('Caug7', crd('C E G# Bb').getName(c).name);  //is this right?
   
-  Test.assert('Cdim', crd('C Eb Gb A').getName(c).name);
+  Test.assert('Cdim7', crd('C Eb Gb A').getName(c).name);
   Test.assert('Cm7(b5)', crd('C Eb Gb Bb').getName(c).name);
   Test.assert('Cdim(maj7)', crd('C Eb Gb B').getName(c).name);
   
@@ -311,6 +311,7 @@ Test.add('get chord name - C', function() {
   Test.assert('C13', crd('C E G Bb D F A').getName(c).name);
   
   Test.assert('C6', crd('C E G A').getName(c).name);
+  Test.assert('Caug6', crd('C E G# A').getName(c).name);
   Test.assert('C6/9', crd('C E G A D').getName(c).name);
   Test.assert('C7/7', crd('C E G A Bb').getName(c).name);
   

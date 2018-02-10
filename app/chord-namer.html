@@ -6,6 +6,8 @@
 <script>
   $(function() {
     $('#notes').on('change', function() {
+      var useFlats = $('#useFlats')[0].checked;
+      
       var notes = [];
       $('#notes .note input:checked').each(function(){ notes.push(new Note(this.id)) });
       
@@ -19,9 +21,9 @@
       
       var output = '';
       names.forEach(function(nameInfo) {
-        output += `Root=${nameInfo.notes[0].note.getName()}  =>  ${nameInfo.name}\n`;
+        output += `Root=${nameInfo.notes[0].note.getName(useFlats)}  =>  ${nameInfo.name}\n`;
         output += `  Intervals found:\n`;
-        nameInfo.notes.forEach((note)=> output += `    ${note.interval}: ${note.note.getName()}\n`);
+        nameInfo.notes.forEach((note)=> output += `    ${note.interval}: ${note.note.getName(useFlats)}\n`);
         
         output += `  Reason for name:\n`;
         nameInfo.verbose.forEach((s)=> output += `    ${s}\n`);
@@ -29,10 +31,27 @@
       });
       
       $('#output').text(output);
-    })
+    });
+    
+    $('#useFlats').on('change', function() {
+      var useFlats = this.checked;
+      $('#notes .note label').each(function() {
+        $this = $(this);
+        $this.text(new Note($this.text().trim()).getName(useFlats));
+      });
+      $('#notes').trigger('change');
+    });
   });
 </script>
 <style>
+#options {
+  font-size: 30px;
+}
+#options input[type=checkbox] {
+  height: 20px;
+  width: 20px;
+  margin-bottom: 30px;
+}
 #notes {
   font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,sans-serif;
   font-weight: bold;
@@ -62,6 +81,10 @@
 </head>
 <body>
 <h1>Chord-o-matic Chord Namer</h1>
+
+<div id="options">
+  Options: <input type="checkbox" id="useFlats" /> <label for="useFlats">Flats</label>
+</div>
 
 <div id="notes">
   <div class="note"><label for="C" >C </label><input type="checkbox" id="C"  /></div>

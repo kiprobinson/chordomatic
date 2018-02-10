@@ -253,11 +253,13 @@ function Chord(notes) {
         
         if(intervals[DOM_SEVENTH]) {
           verbose.push('found dominant seventh');
+          noteDetails.push({interval: '7', note: rootNote.transpose(DOM_SEVENTH)});
           consumed[DOM_SEVENTH] = true;
           intervalName = '7';
         }
         else if(intervals[MAJ_SEVENTH]) {
           verbose.push('found major seventh');
+          noteDetails.push({interval: 'maj7', note: rootNote.transpose(MAJ_SEVENTH)});
           consumed[MAJ_SEVENTH] = true;
           intervalName = 'maj7';
         }
@@ -293,6 +295,7 @@ function Chord(notes) {
         
         if(intervals[DOM_SEVENTH]) {
           verbose.push('found dominant seventh');
+          noteDetails.push({interval: '7', note: rootNote.transpose(DOM_SEVENTH)});
           consumed[DOM_SEVENTH] = true;
           intervalName = '7';
           if(intervals[FLAT_FIFTH]) {
@@ -303,8 +306,15 @@ function Chord(notes) {
         }
         else if(intervals[MAJ_SEVENTH]) {
           verbose.push('found major seventh');
+          noteDetails.push({interval: 'maj7', note: rootNote.transpose(MAJ_SEVENTH)});
           consumed[MAJ_SEVENTH] = true;
           intervalName = '(maj7)';
+        }
+        else if(intervals[SIXTH] && intervals[FLAT_FIFTH]) {
+          verbose.push('flat fifth and double-flat seventh - dim7 chord');
+          noteDetails.push({interval: 'bb7', note: rootNote.transpose(SIXTH)});
+          consumed[SIXTH] = true;
+          intervalName = '7';
         }
       }
       else {
@@ -312,23 +322,28 @@ function Chord(notes) {
         quality = 'sus';
         if(intervals[SECOND] && intervals[FOURTH]) {
           verbose.push('found second and fourth. this is a sus2/4');
+          noteDetails.push({interval: '2', note: rootNote.transpose(SECOND)});
+          noteDetails.push({interval: '4', note: rootNote.transpose(FOURTH)});
           consumed[SECOND] = true;
           consumed[FOURTH] = true;
           quality += '2/4';
         }
         else if(intervals[SECOND]) {
           verbose.push('found second. this is a sus2');
+          noteDetails.push({interval: '2', note: rootNote.transpose(SECOND)});
           consumed[SECOND] = true;
           quality += '2';
         }
         else if(intervals[FOURTH]) {
           verbose.push('found second. this is a sus4');
+          noteDetails.push({interval: '4', note: rootNote.transpose(FOURTH)});
           consumed[FOURTH] = true;
           quality += '4';
         }
         
         if(intervals[FIFTH]) {
           verbose.push('found fifth');
+          noteDetails.push({interval: '5', note: rootNote.transpose(FIFTH)});
           consumed[FIFTH] = true;
         }
         else {
@@ -340,45 +355,55 @@ function Chord(notes) {
     
     if(intervals[FLAT_SECOND] && !consumed[FLAT_SECOND]) {
       verbose.push('found a flat second we have not used');
+      noteDetails.push({interval: 'b2', note: rootNote.transpose(FLAT_SECOND)});
       added += 'add(b2)';
     }
     if(intervals[SECOND] && !consumed[SECOND]) {
       verbose.push('found a second we have not used');
+      noteDetails.push({interval: '2', note: rootNote.transpose(SECOND)});
       added += 'add2';
     }
     if(intervals[MIN_THIRD] && !consumed[MIN_THIRD]) {
       verbose.push('found a minor third we have not used');
+      noteDetails.push({interval: 'm3', note: rootNote.transpose(MIN_THIRD)});
       added += 'add(m3)';
     }
     if(intervals[FOURTH] && !consumed[FOURTH]) {
       verbose.push('found a fourth we have not used');
+      noteDetails.push({interval: '4', note: rootNote.transpose(FOURTH)});
       added += 'add4';
     }
     if(intervals[FLAT_FIFTH] && !consumed[FLAT_FIFTH]) {
       verbose.push('found a flat fifth we have not used');
+      noteDetails.push({interval: 'b5', note: rootNote.transpose(FLAT_FIFTH)});
       added += 'add(b5)';
     }
     if(intervals[FIFTH] && !consumed[FIFTH]) {
       //probably shouldn't be able to get here i think?
       verbose.push('found a fifth we have not used');
+      noteDetails.push({interval: '5', note: rootNote.transpose(FIFTH)});
       added += 'add5';
     }
     if(intervals[SHARP_FIFTH] && !consumed[SHARP_FIFTH]) {
       verbose.push('found a sharp fifth we have not used');
+      noteDetails.push({interval: '#5', note: rootNote.transpose(SHARP_FIFTH)});
       added += 'add(#5)';
     }
     if(intervals[SIXTH] && !consumed[SIXTH]) {
       verbose.push('found a sixth we have not used');
+      noteDetails.push({interval: '6', note: rootNote.transpose(SIXTH)});
       added += 'add6';
     }
     if(intervals[DOM_SEVENTH] && !consumed[DOM_SEVENTH]) {
       //probably shouldn't be able to get here i think?
       verbose.push('found a dominant seventh we have not used');
+      noteDetails.push({interval: '7', note: rootNote.transpose(DOM_SEVENTH)});
       added += 'add(dom7)';
     }
     if(intervals[MAJ_SEVENTH] && !consumed[MAJ_SEVENTH]) {
       //probably shouldn't be able to get here i think?
       verbose.push('found a major seventh we have not used');
+      noteDetails.push({interval: 'maj7', note: rootNote.transpose(MAJ_SEVENTH)});
       added += 'add(maj7)';
     }
     
