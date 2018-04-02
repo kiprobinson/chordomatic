@@ -263,6 +263,24 @@ function Chord(notes) {
           consumed[MAJ_SEVENTH] = true;
           intervalName = 'maj7';
         }
+        
+        if(intervals[SECOND]) {
+          verbose.push('found ninth (second)');
+          noteDetails.push({interval: '9', note: rootNote.transpose(SECOND)});
+          consumed[SECOND] = true;
+          if(intervals[DOM_SEVENTH]) {
+            verbose.push('9 chord - 7 chord plus ninth');
+            intervalName = '9';
+          }
+          else if(intervals[MAJ_SEVENTH]) {
+            verbose.push('maj9 chord - maj7 chord plus ninth');
+            intervalName = 'maj9';
+          }
+          else {
+            verbose.push('add9 chord - ninth chord with missing seventh')
+            added += 'add9';
+          }
+        }
       }
       else if(intervals[MIN_THIRD]) {
         verbose.push('found minor third. this is a minor chord');
@@ -315,6 +333,24 @@ function Chord(notes) {
           noteDetails.push({interval: 'bb7', note: rootNote.transpose(SIXTH)});
           consumed[SIXTH] = true;
           intervalName = '7';
+        }
+        
+        if(intervals[SECOND]) {
+          verbose.push('found ninth (second)');
+          noteDetails.push({interval: '9', note: rootNote.transpose(SECOND)});
+          consumed[SECOND] = true;
+          if(intervals[DOM_SEVENTH]) {
+            verbose.push('m9 chord - m7 chord plus ninth');
+            intervalName = '9';
+          }
+          else if(intervals[MAJ_SEVENTH]) {
+            verbose.push('m(maj9) chord - m(maj7) chord plus ninth');
+            intervalName = '(maj9)';
+          }
+          else {
+            verbose.push('m(add9) chord - ninth chord with missing seventh')
+            added += '(add9)';
+          }
         }
       }
       else {

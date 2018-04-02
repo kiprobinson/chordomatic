@@ -265,8 +265,10 @@ Test.add('get chord name - C', function() {
   /*
   Test.assert('??', crd('C Db').getName(c).name);
   Test.assert('??', crd('C D').getName(c).name);
-  Test.assert('??', crd('C Eb').getName(c).name);
-  Test.assert('??', crd('C E').getName(c).name);
+  */
+  Test.assert('Cm(no5)', crd('C Eb').getName(c).name);
+  Test.assert('C(no5)', crd('C E').getName(c).name);
+  /*
   Test.assert('??', crd('C F').getName(c).name);
   Test.assert('??', crd('C Gb').getName(c).name);
   */
@@ -301,12 +303,18 @@ Test.add('get chord name - C', function() {
   Test.assert('Csus2', crd('C D G').getName(c).name);
   Test.assert('Csus4', crd('C F G').getName(c).name);
   Test.assert('Csus2/4', crd('C D F G').getName(c).name);
-  Test.assert('C7sus4', crd('C F G Bb').getName(c).name);
-  Test.assert('C9sus4', crd('C F G Bb D').getName(c).name);
   
-  //some more
-  Test.assert('C9', crd('C E G D').getName(c).name); //is this right?
-  Test.assert('C9', crd('C E G Bb D').getName(c).name); //is this right?
+  //ninths
+  Test.assert('C9', crd('C E G Bb D').getName(c).name);
+  Test.assert('Cmaj9', crd('C E G B D').getName(c).name);
+  Test.assert('Cadd9', crd('C E G D').getName(c).name);
+  Test.assert('Cm9', crd('C Eb G Bb D').getName(c).name);
+  Test.assert('Cm(maj9)', crd('C Eb G B D').getName(c).name);
+  Test.assert('Cm(add9)', crd('C Eb G D').getName(c).name);
+  
+  //is there a Cdim9? Caug9?
+  
+  //not sure about below!
   Test.assert('C11', crd('C E G Bb D F').getName(c).name);
   Test.assert('C13', crd('C E G Bb D F A').getName(c).name);
   
@@ -318,6 +326,9 @@ Test.add('get chord name - C', function() {
   Test.assert('Cadd9', crd('C E G D').getName(c).name);
   Test.assert('Cadd11', crd('C E G F').getName(c).name);
   Test.assert('Cadd(m3)', crd('C Eb E G').getName(c).name);
+  
+  Test.assert('C7sus4', crd('C F G Bb').getName(c).name);
+  Test.assert('C9sus4', crd('C F G Bb D').getName(c).name);
   
   //need more...
   
