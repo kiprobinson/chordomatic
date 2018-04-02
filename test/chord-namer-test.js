@@ -251,7 +251,7 @@ Test.add('compare pitches', function() {
 
 //---------------------------------------------------------------
 
-Test.add('get chord name - C', function() {
+Test.add('get chord name - simple', function() {
   //helper function to build a chord less tediously...
   var crd = function(noteList) {
     return new Chord(noteList.split(' ').map(s => new Note(s)));
@@ -262,33 +262,50 @@ Test.add('get chord name - C', function() {
   Test.assert('C', crd('C').getName(c).name);
   
   //two-note "chord"
-  /*
-  Test.assert('??', crd('C Db').getName(c).name);
-  Test.assert('??', crd('C D').getName(c).name);
-  */
+  //Test.assert('??', crd('C Db').getName(c).name);
+  //Test.assert('??', crd('C D').getName(c).name);
   Test.assert('Cm(no5)', crd('C Eb').getName(c).name);
   Test.assert('C(no5)', crd('C E').getName(c).name);
-  /*
-  Test.assert('??', crd('C F').getName(c).name);
-  Test.assert('??', crd('C Gb').getName(c).name);
-  */
+  //Test.assert('??', crd('C F').getName(c).name);
+  //Test.assert('??', crd('C Gb').getName(c).name);
   Test.assert('C5', crd('C G').getName(c).name);
-  /*
-  Test.assert('??', crd('C Ab').getName(c).name);
-  Test.assert('??', crd('C A').getName(c).name);
-  Test.assert('??', crd('C Bb').getName(c).name);
-  Test.assert('??', crd('C B').getName(c).name);
-  */
+  //Test.assert('??', crd('C Ab').getName(c).name);
+  //Test.assert('??', crd('C A').getName(c).name);
+  //Test.assert('??', crd('C Bb').getName(c).name);
+  //Test.assert('??', crd('C B').getName(c).name);
+});
+
+Test.add('get chord name - major/minor/aug', function() {
+  //helper function to build a chord less tediously...
+  var crd = function(noteList) {
+    return new Chord(noteList.split(' ').map(s => new Note(s)));
+  }
+  var c = new Note('C');
   
-  //major chord
   Test.assert('C', crd('C E G').getName(c).name);
-  
-  //minor chord
   Test.assert('Cm', crd('C Eb G').getName(c).name);
-  
   Test.assert('Caug', crd('C E G#').getName(c).name);
+});
+
+Test.add('get chord name - suspended', function() {
+  //helper function to build a chord less tediously...
+  var crd = function(noteList) {
+    return new Chord(noteList.split(' ').map(s => new Note(s)));
+  }
+  var c = new Note('C');
   
-  //sevenths
+  Test.assert('Csus2', crd('C D G').getName(c).name);
+  Test.assert('Csus4', crd('C F G').getName(c).name);
+  Test.assert('Csus2/4', crd('C D F G').getName(c).name);
+});
+
+Test.add('get chord name - sevenths', function() {
+  //helper function to build a chord less tediously...
+  var crd = function(noteList) {
+    return new Chord(noteList.split(' ').map(s => new Note(s)));
+  }
+  var c = new Note('C');
+  
   Test.assert('C7', crd('C E G Bb').getName(c).name);
   Test.assert('Cm7', crd('C Eb G Bb').getName(c).name);
   Test.assert('Cmaj7', crd('C E G B').getName(c).name);
@@ -299,12 +316,16 @@ Test.add('get chord name - C', function() {
   Test.assert('Cm7(b5)', crd('C Eb Gb Bb').getName(c).name);
   Test.assert('Cdim(maj7)', crd('C Eb Gb B').getName(c).name);
   
-  //suspended
-  Test.assert('Csus2', crd('C D G').getName(c).name);
-  Test.assert('Csus4', crd('C F G').getName(c).name);
-  Test.assert('Csus2/4', crd('C D F G').getName(c).name);
+  Test.assert('C7sus4', crd('C F G Bb').getName(c).name); //is this right? wouldn't it be a form of c11?
+});
+
+Test.add('get chord name - ninths', function() {
+  //helper function to build a chord less tediously...
+  var crd = function(noteList) {
+    return new Chord(noteList.split(' ').map(s => new Note(s)));
+  }
+  var c = new Note('C');
   
-  //ninths
   Test.assert('C9', crd('C E G Bb D').getName(c).name);
   Test.assert('Cmaj9', crd('C E G B D').getName(c).name);
   Test.assert('Cadd9', crd('C E G D').getName(c).name);
@@ -314,23 +335,36 @@ Test.add('get chord name - C', function() {
   
   //is there a Cdim9? Caug9?
   
+  Test.assert('C9sus4', crd('C F G Bb D').getName(c).name); //is this right? wouldn't it be a form of c11?
+});
+
+Test.add('get chord name - 11/13', function() {
+  //helper function to build a chord less tediously...
+  var crd = function(noteList) {
+    return new Chord(noteList.split(' ').map(s => new Note(s)));
+  }
+  var c = new Note('C');
+  
   //not sure about below!
   Test.assert('C11', crd('C E G Bb D F').getName(c).name);
+  Test.assert('Cadd11', crd('C E G F').getName(c).name);
   Test.assert('C13', crd('C E G Bb D F A').getName(c).name);
   
   Test.assert('C6', crd('C E G A').getName(c).name);
   Test.assert('Caug6', crd('C E G# A').getName(c).name);
   Test.assert('C6/9', crd('C E G A D').getName(c).name);
   Test.assert('C7/7', crd('C E G A Bb').getName(c).name);
+});
+
+Test.add('get chord name - others', function() {
+  //helper function to build a chord less tediously...
+  var crd = function(noteList) {
+    return new Chord(noteList.split(' ').map(s => new Note(s)));
+  }
+  var c = new Note('C');
   
-  Test.assert('Cadd9', crd('C E G D').getName(c).name);
-  Test.assert('Cadd11', crd('C E G F').getName(c).name);
-  Test.assert('Cadd(m3)', crd('C Eb E G').getName(c).name);
-  
-  Test.assert('C7sus4', crd('C F G Bb').getName(c).name);
-  Test.assert('C9sus4', crd('C F G Bb D').getName(c).name);
+  Test.assert('Cadd(m3)', crd('C Eb E G').getName(c).name); //is this right??
   
   //need more...
-  
 });
 
