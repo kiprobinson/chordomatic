@@ -209,6 +209,7 @@ function Chord(notes) {
     const NINTH = SECOND;
     const ELEVENTH = FOURTH;
     const THIRTEENTH = SIXTH;
+    const DOUBLE_FLAT_SEVENTH = SIXTH;
     
     if(!intervals[ROOT]) {
       verbose.push('root is not present. pretending like it is.')
@@ -234,6 +235,7 @@ function Chord(notes) {
         consumed[MAJ_THIRD] = true;
         
         if(intervals[FIFTH]) {
+          verbose.push('found fifth');
           noteDetails.push({interval: '5', note: rootNote.transpose(FIFTH)});
           consumed[FIFTH] = true;
         }
@@ -281,6 +283,11 @@ function Chord(notes) {
             verbose.push('maj9 chord - maj7 chord plus ninth');
             intervalName = 'maj9';
           }
+          else if (intervals[SIXTH]) {
+            verbose.push('6/9 chord - found sixth and ninth, but no seventh');
+            consumed[SIXTH] = true;
+            intervalName = '6/9';
+          }
           else {
             verbose.push('add9 chord - ninth chord with missing seventh')
             added += 'add9';
@@ -319,6 +326,14 @@ function Chord(notes) {
           }
           //note: no "add13" chord. if seventh is missing, this is just a "6" chord that will be handled later.
         }
+        
+        if(intervals[SIXTH] && !consumed[SIXTH]) {
+          //we have a sixth that wasn't already identified as a thirteenth
+          verbose.push('found sixth');
+          noteDetails.push({interval: '6', note: rootNote.transpose(SIXTH)});
+          consumed[SIXTH] = true;
+          intervalName = '6';
+        }
       }
       else if(intervals[MIN_THIRD]) {
         verbose.push('found minor third. this is a minor chord');
@@ -327,6 +342,7 @@ function Chord(notes) {
         consumed[MIN_THIRD] = true;
         
         if(intervals[FIFTH]) {
+          verbose.push('found fifth');
           noteDetails.push({interval: '5', note: rootNote.transpose(FIFTH)});
           consumed[FIFTH] = true;
         }
@@ -366,7 +382,7 @@ function Chord(notes) {
           consumed[MAJ_SEVENTH] = true;
           intervalName = '(maj7)';
         }
-        else if(intervals[SIXTH] && intervals[FLAT_FIFTH]) {
+        else if(intervals[DOUBLE_FLAT_SEVENTH] && intervals[FLAT_FIFTH]) {
           verbose.push('flat fifth and double-flat seventh - dim7 chord');
           noteDetails.push({interval: 'bb7', note: rootNote.transpose(SIXTH)});
           consumed[SIXTH] = true;
@@ -384,6 +400,11 @@ function Chord(notes) {
           else if(intervals[MAJ_SEVENTH]) {
             verbose.push('m(maj9) chord - m(maj7) chord plus ninth');
             intervalName = '(maj9)';
+          }
+          else if (intervals[SIXTH]) {
+            verbose.push('6/9 chord - found sixth and ninth, but no seventh');
+            consumed[SIXTH] = true;
+            intervalName = '6/9';
           }
           else {
             verbose.push('m(add9) chord - ninth chord with missing seventh')
@@ -422,6 +443,14 @@ function Chord(notes) {
             intervalName = '(maj13)';
           }
           //note: no "add13" chord. if seventh is missing, this is just a "6" chord that will be handled later.
+        }
+        
+        if(intervals[SIXTH] && !consumed[SIXTH]) {
+          //we have a sixth that wasn't already identified as a thirteenth
+          verbose.push('found sixth');
+          noteDetails.push({interval: '6', note: rootNote.transpose(SIXTH)});
+          consumed[SIXTH] = true;
+          intervalName = '6';
         }
       }
       else {

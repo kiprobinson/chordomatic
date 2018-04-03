@@ -344,14 +344,24 @@ Test.add('get chord name - thirteenths', function() {
   Test.assert('Cm(maj13)', crd('C Eb G B A').getName(c).name);
 });
 
+Test.add('get chord name - sixths', function() {
+  Test.assert('C6', crd('C E G A').getName(c).name);
+  Test.assert('C6(no5)', crd('C E A').getName(c).name);
+  Test.assert('C6(b5)', crd('C E Gb A').getName(c).name);
+  Test.assert('Caug6', crd('C E G# A').getName(c).name);
+  Test.assert('Cm6', crd('C Eb G A').getName(c).name);
+  Test.assert('Cm6(no5)', crd('C Eb A').getName(c).name);
+  Test.assert('Cm6(#5)', crd('C Eb G# A').getName(c).name);
+  
+  Test.assert('C6/9', crd('C E G A D').getName(c).name);
+  Test.assert('Cm6/9', crd('C Eb G A D').getName(c).name);
+});
+
 Test.add('get chord name - others', function() {
   //not sure about below!
   Test.assert('Cadd(m3)', crd('C Eb E G').getName(c).name); //is this right??
   
-  Test.assert('C6', crd('C E G A').getName(c).name);
-  Test.assert('Caug6', crd('C E G# A').getName(c).name);
-  Test.assert('C6/9', crd('C E G A D').getName(c).name);
-  Test.assert('C7/7', crd('C E G A Bb').getName(c).name);
+  Test.assert('C7/7', crd('C E G A Bb').getName(c).name); //this is C13. Maybe I meant C E G Bb B ?? Would that be C7add7?
   
   //need more...
 });
