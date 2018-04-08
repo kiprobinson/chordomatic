@@ -134,9 +134,9 @@ function Chord(notes) {
    * Returns all possible names of this chord, by returning determining the name of the chord with each note as root note.
    */
   this.getNames = function(asFlat=false) {
-    var names = [];
     var self = this;
-    this.notes.forEach(function(note) { names.push(self.getName(note, asFlat)); });
+    var names = this.notes.map((note) => self.getName(note, asFlat));
+    names.sort((a,b)=>b.score-a.score);
     return names;
   }
   
@@ -148,30 +148,31 @@ function Chord(notes) {
     return (this.notes.findIndex(n => n.equals(note)) >= 0);
   }
   
+  /** THIS IS WHERE THE MAGIC HAPPENS.
+   *  returns struct like:
+   *  {
+   *    name: 'C',
+   *    notes: [
+   *      {interval: 'R', note: C},
+   *      {interval: '3', note: E},
+   *      {interval: '5', note: G}
+   *    ]
+   *    verbose: [ 'assuming root is C', 'found a maj3 - this is a major chord', 'found 5th' ]
+   *  }
+   *  
+   *  another example:
+   *  {
+   *    name: 'Cm7',
+   *    notes: [
+   *      {interval: 'R', note: C},
+   *      {interval: 'm3', note: Eb},
+   *      {interval: '5', note: G}
+   *      {interval: 'm7', note: Bb}
+   *    ]
+   *    verbose: [ 'assuming root is C', 'found a min3 - this is a minor chord', 'found 5th', 'found minor 7th' ]
+   *  }
+   */
   this.getName = function(rootNote, asFlat=false) {
-    //THIS IS WHERE THE MAGIC HAPPENS.
-    //return struct like:
-    //{
-    //  name: 'C',
-    //  notes: [
-    //    {interval: 'R', note: C},
-    //    {interval: '3', note: E},
-    //    {interval: '5', note: G}
-    //  ]
-    //  verbose: [ 'assuming root is C', 'found a maj3 - this is a major chord', 'found 5th' ]
-    //}
-    //
-    //another example:
-    //{
-    //  name: 'Cm7',
-    //  notes: [
-    //    {interval: 'R', note: C},
-    //    {interval: 'm3', note: Eb},
-    //    {interval: '5', note: G}
-    //    {interval: 'm7', note: Bb}
-    //  ]
-    //  verbose: [ 'assuming root is C', 'found a min3 - this is a minor chord', 'found 5th', 'found minor 7th' ]
-    //}
     
     var rootName = rootNote.getName(asFlat);
     var quality = '';
@@ -183,6 +184,7 @@ function Chord(notes) {
     
     var verbose = [];
     var noteDetails = [];
+    var score = 0;
     
     //determine which intervals are present
     var intervals = new Array(12).fill(false);
@@ -205,7 +207,7 @@ function Chord(notes) {
     const DOM_SEVENTH = 10;
     const MAJ_SEVENTH = 11;
     
-    //convenient aliasas
+    //convenient aliases
     const NINTH = SECOND;
     const ELEVENTH = FOURTH;
     const THIRTEENTH = SIXTH;
@@ -215,6 +217,7 @@ function Chord(notes) {
       verbose.push('root is not present. pretending like it is.')
       intervals[ROOT] = true;
       consumed[ROOT] = true;
+      score -= 20;
     }
     noteDetails.push({interval: 'R', note: rootNote});
     
@@ -225,327 +228,394 @@ function Chord(notes) {
     }
     else if(noteCount == 2 && intervals[FIFTH]) {
       verbose.push('only root and fifth. this is a power chord.');
-      rootName += '5';
+      intervalName = '5';
+      noteDetails.push({interval: '5', note: rootNote.transpose(FIFTH)});
       consumed[FIFTH] = true;
+      score += 10;
     }
-    else {
-      if(intervals[MAJ_THIRD]) {
-        verbose.push('found major third. this is a major chord');
-        noteDetails.push({interval: '3', note: rootNote.transpose(MAJ_THIRD)});
-        consumed[MAJ_THIRD] = true;
-        
-        if(intervals[FIFTH]) {
-          verbose.push('found fifth');
-          noteDetails.push({interval: '5', note: rootNote.transpose(FIFTH)});
-          consumed[FIFTH] = true;
-        }
-        else {
-          if(intervals[FLAT_FIFTH]) {
-            verbose.push('found flat fifth.');
-            noteDetails.push({interval: 'b5', note: rootNote.transpose(FLAT_FIFTH)});
-            consumed[FLAT_FIFTH] = true;
-            altFifth = '(b5)';
-          }
-          else if(intervals[SHARP_FIFTH]) {
-            verbose.push('found sharp fifth. this is augmented chord');
-            noteDetails.push({interval: '#5', note: rootNote.transpose(SHARP_FIFTH)});
-            consumed[SHARP_FIFTH] = true;
-            quality += 'aug';
-          }
-          else {
-            verbose.push('missing fifth');
-            omissions += '(no5)';
-          }
-        }
-        
-        if(intervals[DOM_SEVENTH]) {
-          verbose.push('found dominant seventh');
-          noteDetails.push({interval: '7', note: rootNote.transpose(DOM_SEVENTH)});
-          consumed[DOM_SEVENTH] = true;
-          intervalName = '7';
-        }
-        else if(intervals[MAJ_SEVENTH]) {
-          verbose.push('found major seventh');
-          noteDetails.push({interval: 'maj7', note: rootNote.transpose(MAJ_SEVENTH)});
-          consumed[MAJ_SEVENTH] = true;
-          intervalName = 'maj7';
-        }
-        
-        if(intervals[NINTH]) {
-          verbose.push('found ninth (second)');
-          noteDetails.push({interval: '9', note: rootNote.transpose(NINTH)});
-          consumed[NINTH] = true;
-          if(intervals[DOM_SEVENTH]) {
-            verbose.push('9 chord - 7 chord plus ninth');
-            intervalName = '9';
-          }
-          else if(intervals[MAJ_SEVENTH]) {
-            verbose.push('maj9 chord - maj7 chord plus ninth');
-            intervalName = 'maj9';
-          }
-          else if (intervals[SIXTH]) {
-            verbose.push('6/9 chord - found sixth and ninth, but no seventh');
-            consumed[SIXTH] = true;
-            intervalName = '6/9';
-          }
-          else {
-            verbose.push('add9 chord - ninth chord with missing seventh')
-            added += 'add9';
-          }
-        }
-        
-        if(intervals[ELEVENTH]) {
-          verbose.push('found eleventh (fourth)');
-          noteDetails.push({interval: '11', note: rootNote.transpose(ELEVENTH)});
-          consumed[ELEVENTH] = true;
-          if(intervals[DOM_SEVENTH]) {
-            verbose.push('11 chord - 7 chord plus eleventh');
-            intervalName = '11';
-          }
-          else if(intervals[MAJ_SEVENTH]) {
-            verbose.push('maj11 chord - maj7 chord plus eleventh');
-            intervalName = 'maj11';
-          }
-          else {
-            verbose.push('add11 chord - eleventh chord with missing seventh')
-            added += 'add11';
-          }
-        }
-        
-        if(intervals[THIRTEENTH] && (intervals[DOM_SEVENTH] || intervals[MAJ_SEVENTH])) {
-          verbose.push('found thirteenth (sixth)');
-          noteDetails.push({interval: '13', note: rootNote.transpose(THIRTEENTH)});
-          consumed[THIRTEENTH] = true;
-          if(intervals[DOM_SEVENTH]) {
-            verbose.push('13 chord - 7 chord plus thirteenth');
-            intervalName = '13';
-          }
-          else if(intervals[MAJ_SEVENTH]) {
-            verbose.push('maj13 chord - maj7 chord plus thirteenth');
-            intervalName = 'maj13';
-          }
-          //note: no "add13" chord. if seventh is missing, this is just a "6" chord that will be handled later.
-        }
-        
-        if(intervals[SIXTH] && !consumed[SIXTH]) {
-          //we have a sixth that wasn't already identified as a thirteenth
-          verbose.push('found sixth');
-          noteDetails.push({interval: '6', note: rootNote.transpose(SIXTH)});
-          consumed[SIXTH] = true;
-          intervalName = '6';
-        }
-      }
-      else if(intervals[MIN_THIRD]) {
-        verbose.push('found minor third. this is a minor chord');
-        noteDetails.push({interval: 'm3', note: rootNote.transpose(MIN_THIRD)});
-        quality = 'm';
-        consumed[MIN_THIRD] = true;
-        
-        if(intervals[FIFTH]) {
-          verbose.push('found fifth');
-          noteDetails.push({interval: '5', note: rootNote.transpose(FIFTH)});
-          consumed[FIFTH] = true;
-        }
-        else {
-          if(intervals[FLAT_FIFTH]) {
-            verbose.push('found flat fifth.  this is diminshed chord');
-            noteDetails.push({interval: 'b5', note: rootNote.transpose(FLAT_FIFTH)});
-            consumed[FLAT_FIFTH] = true;
-            quality = 'dim';
-          }
-          else if(intervals[SHARP_FIFTH]) {
-            verbose.push('found sharp fifth.');
-            noteDetails.push({interval: '#5', note: rootNote.transpose(SHARP_FIFTH)});
-            consumed[SHARP_FIFTH] = true;
-            altFifth += '(#5)';
-          }
-          else {
-            verbose.push('missing fifth');
-            omissions += '(no5)';
-          }
-        }
-        
-        if(intervals[DOM_SEVENTH]) {
-          verbose.push('found dominant seventh');
-          noteDetails.push({interval: '7', note: rootNote.transpose(DOM_SEVENTH)});
-          consumed[DOM_SEVENTH] = true;
-          intervalName = '7';
-          if(intervals[FLAT_FIFTH]) {
-            verbose.push('flat fifth and dominant seventh - this is called m7b5, not dim7');
-            quality = 'm';
-            altFifth = '(b5)';
-          }
-        }
-        else if(intervals[MAJ_SEVENTH]) {
-          verbose.push('found major seventh');
-          noteDetails.push({interval: 'maj7', note: rootNote.transpose(MAJ_SEVENTH)});
-          consumed[MAJ_SEVENTH] = true;
-          intervalName = '(maj7)';
-        }
-        else if(intervals[DOUBLE_FLAT_SEVENTH] && intervals[FLAT_FIFTH]) {
-          verbose.push('flat fifth and double-flat seventh - dim7 chord');
-          noteDetails.push({interval: 'bb7', note: rootNote.transpose(SIXTH)});
-          consumed[SIXTH] = true;
-          intervalName = '7';
-        }
-        
-        if(intervals[NINTH]) {
-          verbose.push('found ninth (second)');
-          noteDetails.push({interval: '9', note: rootNote.transpose(NINTH)});
-          consumed[NINTH] = true;
-          if(intervals[DOM_SEVENTH]) {
-            verbose.push('m9 chord - m7 chord plus ninth');
-            intervalName = '9';
-          }
-          else if(intervals[MAJ_SEVENTH]) {
-            verbose.push('m(maj9) chord - m(maj7) chord plus ninth');
-            intervalName = '(maj9)';
-          }
-          else if (intervals[SIXTH]) {
-            verbose.push('6/9 chord - found sixth and ninth, but no seventh');
-            consumed[SIXTH] = true;
-            intervalName = '6/9';
-          }
-          else {
-            verbose.push('m(add9) chord - ninth chord with missing seventh')
-            added += '(add9)';
-          }
-        }
-        
-        if(intervals[ELEVENTH]) {
-          verbose.push('found eleventh (fourth)');
-          noteDetails.push({interval: '11', note: rootNote.transpose(ELEVENTH)});
-          consumed[ELEVENTH] = true;
-          if(intervals[DOM_SEVENTH]) {
-            verbose.push('m11 chord - m7 chord plus eleventh');
-            intervalName = '11';
-          }
-          else if(intervals[MAJ_SEVENTH]) {
-            verbose.push('m(maj11) chord - m(maj7) chord plus eleventh');
-            intervalName = '(maj11)';
-          }
-          else {
-            verbose.push('m(add11) chord - eleventh chord with missing seventh')
-            added += '(add11)';
-          }
-        }
-        
-        if(intervals[THIRTEENTH] && (intervals[DOM_SEVENTH] || intervals[MAJ_SEVENTH])) {
-          verbose.push('found thirteenth (sixth)');
-          noteDetails.push({interval: '13', note: rootNote.transpose(THIRTEENTH)});
-          consumed[THIRTEENTH] = true;
-          if(intervals[DOM_SEVENTH]) {
-            verbose.push('m13 chord - 7 chord plus thirteenth');
-            intervalName = '13';
-          }
-          else if(intervals[MAJ_SEVENTH]) {
-            verbose.push('m(maj13) chord - maj7 chord plus thirteenth');
-            intervalName = '(maj13)';
-          }
-          //note: no "add13" chord. if seventh is missing, this is just a "6" chord that will be handled later.
-        }
-        
-        if(intervals[SIXTH] && !consumed[SIXTH]) {
-          //we have a sixth that wasn't already identified as a thirteenth
-          verbose.push('found sixth');
-          noteDetails.push({interval: '6', note: rootNote.transpose(SIXTH)});
-          consumed[SIXTH] = true;
-          intervalName = '6';
-        }
+    else if(intervals[MAJ_THIRD]) {
+      verbose.push('found major third. this is a major chord');
+      noteDetails.push({interval: '3', note: rootNote.transpose(MAJ_THIRD)});
+      consumed[MAJ_THIRD] = true;
+      score += 30;
+      
+      if(intervals[FIFTH]) {
+        verbose.push('found fifth');
+        noteDetails.push({interval: '5', note: rootNote.transpose(FIFTH)});
+        consumed[FIFTH] = true;
+        score += 10;
       }
       else {
-        verbose.push('found no third. this is a suspended chord');
-        quality = 'sus';
-        if(intervals[SECOND] && intervals[FOURTH]) {
-          verbose.push('found second and fourth. this is a sus2/4');
-          noteDetails.push({interval: '2', note: rootNote.transpose(SECOND)});
-          noteDetails.push({interval: '4', note: rootNote.transpose(FOURTH)});
-          consumed[SECOND] = true;
-          consumed[FOURTH] = true;
-          quality += '2/4';
+        if(intervals[FLAT_FIFTH]) {
+          verbose.push('found flat fifth.');
+          noteDetails.push({interval: 'b5', note: rootNote.transpose(FLAT_FIFTH)});
+          consumed[FLAT_FIFTH] = true;
+          score -= 3;
+          altFifth = '(b5)';
         }
-        else if(intervals[SECOND]) {
-          verbose.push('found second. this is a sus2');
-          noteDetails.push({interval: '2', note: rootNote.transpose(SECOND)});
-          consumed[SECOND] = true;
-          quality += '2';
-        }
-        else if(intervals[FOURTH]) {
-          verbose.push('found second. this is a sus4');
-          noteDetails.push({interval: '4', note: rootNote.transpose(FOURTH)});
-          consumed[FOURTH] = true;
-          quality += '4';
-        }
-        
-        if(intervals[FIFTH]) {
-          verbose.push('found fifth');
-          noteDetails.push({interval: '5', note: rootNote.transpose(FIFTH)});
-          consumed[FIFTH] = true;
+        else if(intervals[SHARP_FIFTH]) {
+          verbose.push('found sharp fifth. this is augmented chord');
+          noteDetails.push({interval: '#5', note: rootNote.transpose(SHARP_FIFTH)});
+          consumed[SHARP_FIFTH] = true;
+          score -= 3;
+          quality += 'aug';
         }
         else {
           verbose.push('missing fifth');
           omissions += '(no5)';
+          score -= 10;
         }
+      }
+      
+      if(intervals[DOM_SEVENTH]) {
+        verbose.push('found dominant seventh');
+        noteDetails.push({interval: '7', note: rootNote.transpose(DOM_SEVENTH)});
+        consumed[DOM_SEVENTH] = true;
+        intervalName = '7';
+        score -= 5;
+      }
+      else if(intervals[MAJ_SEVENTH]) {
+        verbose.push('found major seventh');
+        noteDetails.push({interval: 'maj7', note: rootNote.transpose(MAJ_SEVENTH)});
+        consumed[MAJ_SEVENTH] = true;
+        intervalName = (quality === '' ? 'maj7' : '(maj7)');
+        score -= 5;
+      }
+      
+      if(intervals[NINTH]) {
+        verbose.push('found ninth (second)');
+        noteDetails.push({interval: '9', note: rootNote.transpose(NINTH)});
+        consumed[NINTH] = true;
+        score -= 6;
+        if(intervals[DOM_SEVENTH]) {
+          verbose.push('9 chord - 7 chord plus ninth');
+          intervalName = '9';
+        }
+        else if(intervals[MAJ_SEVENTH]) {
+          verbose.push('maj9 chord - maj7 chord plus ninth');
+          intervalName = 'maj9';
+        }
+        else if (intervals[SIXTH]) {
+          verbose.push('6/9 chord - found sixth and ninth, but no seventh');
+          consumed[SIXTH] = true;
+          intervalName = '6/9';
+        }
+        else {
+          verbose.push('add9 chord - ninth chord with missing seventh')
+          added += 'add9';
+        }
+      }
+      
+      if(intervals[ELEVENTH]) {
+        verbose.push('found eleventh (fourth)');
+        noteDetails.push({interval: '11', note: rootNote.transpose(ELEVENTH)});
+        consumed[ELEVENTH] = true;
+        score -= 7;
+        if(intervals[DOM_SEVENTH]) {
+          verbose.push('11 chord - 7 chord plus eleventh');
+          intervalName = '11';
+        }
+        else if(intervals[MAJ_SEVENTH]) {
+          verbose.push('maj11 chord - maj7 chord plus eleventh');
+          intervalName = 'maj11';
+        }
+        else {
+          verbose.push('add11 chord - eleventh chord with missing seventh')
+          added += 'add11';
+        }
+      }
+      
+      if(intervals[THIRTEENTH] && (intervals[DOM_SEVENTH] || intervals[MAJ_SEVENTH])) {
+        verbose.push('found thirteenth (sixth)');
+        noteDetails.push({interval: '13', note: rootNote.transpose(THIRTEENTH)});
+        consumed[THIRTEENTH] = true;
+        score -= 8;
+        if(intervals[DOM_SEVENTH]) {
+          verbose.push('13 chord - 7 chord plus thirteenth');
+          intervalName = '13';
+        }
+        else if(intervals[MAJ_SEVENTH]) {
+          verbose.push('maj13 chord - maj7 chord plus thirteenth');
+          intervalName = 'maj13';
+        }
+        //note: no "add13" chord. if seventh is missing, this is just a "6" chord that will be handled later.
+      }
+      
+      if(intervals[SIXTH] && !consumed[SIXTH]) {
+        //we have a sixth that wasn't already identified as a thirteenth
+        verbose.push('found sixth');
+        noteDetails.push({interval: '6', note: rootNote.transpose(SIXTH)});
+        consumed[SIXTH] = true;
+        intervalName = '6';
+        score -= 9;
+      }
+    }
+    else if(intervals[MIN_THIRD]) {
+      verbose.push('found minor third. this is a minor chord');
+      noteDetails.push({interval: 'm3', note: rootNote.transpose(MIN_THIRD)});
+      quality = 'm';
+      consumed[MIN_THIRD] = true;
+      score += 28;
+      
+      if(intervals[FIFTH]) {
+        verbose.push('found fifth');
+        noteDetails.push({interval: '5', note: rootNote.transpose(FIFTH)});
+        consumed[FIFTH] = true;
+        score += 10;
+      }
+      else {
+        if(intervals[FLAT_FIFTH]) {
+          verbose.push('found flat fifth. this is diminshed chord');
+          noteDetails.push({interval: 'b5', note: rootNote.transpose(FLAT_FIFTH)});
+          consumed[FLAT_FIFTH] = true;
+          score -= 3;
+          quality = 'dim';
+        }
+        else if(intervals[SHARP_FIFTH]) {
+          verbose.push('found sharp fifth.');
+          noteDetails.push({interval: '#5', note: rootNote.transpose(SHARP_FIFTH)});
+          consumed[SHARP_FIFTH] = true;
+          score -= 3;
+          altFifth += '(#5)';
+        }
+        else {
+          verbose.push('missing fifth');
+          omissions += '(no5)';
+          score -= 10;
+        }
+      }
+      
+      if(intervals[DOM_SEVENTH]) {
+        verbose.push('found dominant seventh');
+        noteDetails.push({interval: '7', note: rootNote.transpose(DOM_SEVENTH)});
+        consumed[DOM_SEVENTH] = true;
+        intervalName = '7';
+        score -= 5;
+        if(intervals[FLAT_FIFTH]) {
+          verbose.push('flat fifth and dominant seventh - this is called m7b5, not dim7');
+          quality = 'm';
+          altFifth = '(b5)';
+        }
+      }
+      else if(intervals[MAJ_SEVENTH]) {
+        verbose.push('found major seventh');
+        noteDetails.push({interval: 'maj7', note: rootNote.transpose(MAJ_SEVENTH)});
+        consumed[MAJ_SEVENTH] = true;
+        intervalName = '(maj7)';
+        score -= 5;
+      }
+      else if(intervals[DOUBLE_FLAT_SEVENTH] && intervals[FLAT_FIFTH]) {
+        verbose.push('flat fifth and double-flat seventh - dim7 chord');
+        noteDetails.push({interval: 'bb7', note: rootNote.transpose(SIXTH)});
+        consumed[SIXTH] = true;
+        intervalName = '7';
+        score -= 5;
+      }
+      
+      if(intervals[NINTH]) {
+        verbose.push('found ninth (second)');
+        noteDetails.push({interval: '9', note: rootNote.transpose(NINTH)});
+        consumed[NINTH] = true;
+        score -= 6;
+        if(intervals[DOM_SEVENTH]) {
+          verbose.push('m9 chord - m7 chord plus ninth');
+          intervalName = '9';
+        }
+        else if(intervals[MAJ_SEVENTH]) {
+          verbose.push('m(maj9) chord - m(maj7) chord plus ninth');
+          intervalName = '(maj9)';
+        }
+        else if (intervals[SIXTH]) {
+          verbose.push('6/9 chord - found sixth and ninth, but no seventh');
+          consumed[SIXTH] = true;
+          intervalName = '6/9';
+        }
+        else {
+          verbose.push('m(add9) chord - ninth chord with missing seventh')
+          added += '(add9)';
+        }
+      }
+      
+      if(intervals[ELEVENTH]) {
+        verbose.push('found eleventh (fourth)');
+        noteDetails.push({interval: '11', note: rootNote.transpose(ELEVENTH)});
+        consumed[ELEVENTH] = true;
+        score -= 7;
+        if(intervals[DOM_SEVENTH]) {
+          verbose.push('m11 chord - m7 chord plus eleventh');
+          intervalName = '11';
+        }
+        else if(intervals[MAJ_SEVENTH]) {
+          verbose.push('m(maj11) chord - m(maj7) chord plus eleventh');
+          intervalName = '(maj11)';
+        }
+        else {
+          verbose.push('m(add11) chord - eleventh chord with missing seventh')
+          added += '(add11)';
+        }
+      }
+      
+      if(intervals[THIRTEENTH] && (intervals[DOM_SEVENTH] || intervals[MAJ_SEVENTH])) {
+        verbose.push('found thirteenth (sixth)');
+        noteDetails.push({interval: '13', note: rootNote.transpose(THIRTEENTH)});
+        consumed[THIRTEENTH] = true;
+        score -= 8;
+        if(intervals[DOM_SEVENTH]) {
+          verbose.push('m13 chord - 7 chord plus thirteenth');
+          intervalName = '13';
+        }
+        else if(intervals[MAJ_SEVENTH]) {
+          verbose.push('m(maj13) chord - maj7 chord plus thirteenth');
+          intervalName = '(maj13)';
+        }
+        //note: no "add13" chord. if seventh is missing, this is just a "6" chord that will be handled later.
+      }
+      
+      if(intervals[SIXTH] && !consumed[SIXTH]) {
+        //we have a sixth that wasn't already identified as a thirteenth
+        verbose.push('found sixth');
+        noteDetails.push({interval: '6', note: rootNote.transpose(SIXTH)});
+        consumed[SIXTH] = true;
+        intervalName = '6';
+        score -= 9;
+      }
+    }
+    else {
+      verbose.push('found no third. this is a suspended chord');
+      quality = 'sus';
+      
+      if(intervals[FIFTH]) {
+        verbose.push('found fifth');
+        noteDetails.push({interval: '5', note: rootNote.transpose(FIFTH)});
+        consumed[FIFTH] = true;
+        score += 10;
+      }
+      else {
+        verbose.push('missing fifth');
+        omissions += '(no5)';
+        score -= 10;
+      }
+      
+      if(intervals[SIXTH]) {
+        verbose.push('found sixth - this is a 6sus chord');
+        noteDetails.push({interval: '6', note: rootNote.transpose(SIXTH)});
+        consumed[SIXTH] = true;
+        intervalName = '6';
+        score += 5;
+        
+        if(intervals[NINTH] && !consumed[NINTH]) {
+          verbose.push('found ninth - this is a 6/9sus chord');
+          noteDetails.push({interval: '9', note: rootNote.transpose(NINTH)});
+          consumed[NINTH] = true;
+          intervalName = '6/9';
+          score -= 3;
+        }
+        else if(intervals[ELEVENTH] && !consumed[ELEVENTH]) {
+          verbose.push('found eleventh - this is a 6/11sus chord');
+          noteDetails.push({interval: '11', note: rootNote.transpose(ELEVENTH)});
+          consumed[ELEVENTH] = true;
+          intervalName = '6/11';
+          score -= 4;
+        }
+      }
+      
+      
+      if(intervals[SECOND] && intervals[FOURTH] && !consumed[SECOND] && !consumed[FOURTH]) {
+        verbose.push('found second and fourth. this is a sus2/4');
+        noteDetails.push({interval: '2', note: rootNote.transpose(SECOND)});
+        noteDetails.push({interval: '4', note: rootNote.transpose(FOURTH)});
+        consumed[SECOND] = true;
+        consumed[FOURTH] = true;
+        quality += '2/4';
+        score += 5;
+      }
+      else if(intervals[SECOND] && !consumed[SECOND]) {
+        verbose.push('found second. this is a sus2');
+        noteDetails.push({interval: '2', note: rootNote.transpose(SECOND)});
+        consumed[SECOND] = true;
+        quality += '2';
+        score += 10;
+      }
+      else if(intervals[FOURTH] && !consumed[FOURTH]) {
+        verbose.push('found fourth. this is a sus4');
+        noteDetails.push({interval: '4', note: rootNote.transpose(FOURTH)});
+        consumed[FOURTH] = true;
+        quality += '4';
+        score += 10;
       }
     }
     
+    //if there are any notes in the chord that we still have not used, handle them here as add(whatever)
     if(intervals[FLAT_SECOND] && !consumed[FLAT_SECOND]) {
       verbose.push('found a flat second we have not used');
       noteDetails.push({interval: 'b2', note: rootNote.transpose(FLAT_SECOND)});
       added += 'add(b2)';
+      score -= 10;
     }
     if(intervals[SECOND] && !consumed[SECOND]) {
       verbose.push('found a second we have not used');
       noteDetails.push({interval: '2', note: rootNote.transpose(SECOND)});
       added += 'add2';
+      score -= 10;
     }
     if(intervals[MIN_THIRD] && !consumed[MIN_THIRD]) {
       verbose.push('found a minor third we have not used');
       noteDetails.push({interval: 'm3', note: rootNote.transpose(MIN_THIRD)});
       added += 'add(m3)';
+      score -= 10;
     }
     if(intervals[FOURTH] && !consumed[FOURTH]) {
       verbose.push('found a fourth we have not used');
       noteDetails.push({interval: '4', note: rootNote.transpose(FOURTH)});
       added += 'add4';
+      score -= 10;
     }
     if(intervals[FLAT_FIFTH] && !consumed[FLAT_FIFTH]) {
       verbose.push('found a flat fifth we have not used');
       noteDetails.push({interval: 'b5', note: rootNote.transpose(FLAT_FIFTH)});
       added += 'add(b5)';
+      score -= 10;
     }
     if(intervals[FIFTH] && !consumed[FIFTH]) {
       //probably shouldn't be able to get here i think?
       verbose.push('found a fifth we have not used');
       noteDetails.push({interval: '5', note: rootNote.transpose(FIFTH)});
       added += 'add5';
+      score -= 10;
     }
     if(intervals[SHARP_FIFTH] && !consumed[SHARP_FIFTH]) {
       verbose.push('found a sharp fifth we have not used');
       noteDetails.push({interval: '#5', note: rootNote.transpose(SHARP_FIFTH)});
       added += 'add(#5)';
+      score -= 10;
     }
     if(intervals[SIXTH] && !consumed[SIXTH]) {
       verbose.push('found a sixth we have not used');
       noteDetails.push({interval: '6', note: rootNote.transpose(SIXTH)});
       added += 'add6';
+      score -= 10;
     }
     if(intervals[DOM_SEVENTH] && !consumed[DOM_SEVENTH]) {
       //probably shouldn't be able to get here i think?
       verbose.push('found a dominant seventh we have not used');
       noteDetails.push({interval: '7', note: rootNote.transpose(DOM_SEVENTH)});
       added += 'add(dom7)';
+      score -= 10;
     }
     if(intervals[MAJ_SEVENTH] && !consumed[MAJ_SEVENTH]) {
       //probably shouldn't be able to get here i think?
       verbose.push('found a major seventh we have not used');
       noteDetails.push({interval: 'maj7', note: rootNote.transpose(MAJ_SEVENTH)});
       added += 'add(maj7)';
+      score -= 10;
     }
     
+    //with sus chord, the interval name comes first (C6sus), otherwise quality comes first (Cm7)
+    var qualityInterval = (quality.match(/^sus/) ? intervalName + quality : quality + intervalName);
     return {
-      name: rootName + quality + intervalName + altFifth + added + omissions + bass,
+      name: rootName + qualityInterval + altFifth + added + omissions + bass,
       notes: noteDetails,
+      score: score,
       verbose: verbose
     };
   }
