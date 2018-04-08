@@ -280,24 +280,17 @@ Test.add('get chord name - major/minor/aug', function() {
   Test.assert('Caug', crd('C E G#').getName(c).name);
 });
 
-Test.add('get chord name - suspended', function() {
-  Test.assert('Csus2', crd('C D G').getName(c).name);
-  Test.assert('Csus4', crd('C F G').getName(c).name);
-  Test.assert('Csus2/4', crd('C D F G').getName(c).name);
-});
-
 Test.add('get chord name - sevenths', function() {
   Test.assert('C7', crd('C E G Bb').getName(c).name);
   Test.assert('Cm7', crd('C Eb G Bb').getName(c).name);
   Test.assert('Cmaj7', crd('C E G B').getName(c).name);
   Test.assert('Cm(maj7)', crd('C Eb G B').getName(c).name);
-  Test.assert('Caug7', crd('C E G# Bb').getName(c).name);  //is this right?
+  Test.assert('Caug7', crd('C E G# Bb').getName(c).name);
+  Test.assert('Caug(maj7)', crd('C E G# B').getName(c).name);
   
   Test.assert('Cdim7', crd('C Eb Gb A').getName(c).name);
   Test.assert('Cm7(b5)', crd('C Eb Gb Bb').getName(c).name);
   Test.assert('Cdim(maj7)', crd('C Eb Gb B').getName(c).name);
-  
-  Test.assert('C7sus4', crd('C F G Bb').getName(c).name); //is this right? wouldn't it be a form of c11?
 });
 
 Test.add('get chord name - ninths', function() {
@@ -308,9 +301,10 @@ Test.add('get chord name - ninths', function() {
   Test.assert('Cm(maj9)', crd('C Eb G B D').getName(c).name);
   Test.assert('Cm(add9)', crd('C Eb G D').getName(c).name);
   
-  //is there a Cdim9? Caug9?
+  Test.assert('C7(#9)', crd('C E G Bb D#').getName(c).name);
+  Test.assert('Cmaj7(#9)', crd('C E G B D#').getName(c).name);
   
-  Test.assert('C9sus4', crd('C F G Bb D').getName(c).name); //is this right? wouldn't it be a form of c11?
+  //is there a Cdim9? Caug9?
 });
 
 Test.add('get chord name - elevenths', function() {
@@ -357,11 +351,36 @@ Test.add('get chord name - sixths', function() {
   Test.assert('Cm6/9', crd('C Eb G A D').getName(c).name);
 });
 
+Test.add('get chord name - suspended', function() {
+  Test.assert('Csus2', crd('C D G').getName(c).name);
+  Test.assert('Csus4', crd('C F G').getName(c).name);
+  Test.assert('Csus2/4', crd('C D F G').getName(c).name);
+});
+
+Test.add('get chord name - suspended sixths', function() {
+  Test.assert('C6sus', crd('C A G').getName(c).name);
+  Test.assert('C6/9sus', crd('C A G D').getName(c).name);
+  Test.assert('C6/11sus', crd('C A G F').getName(c).name);
+  Test.assert('C6/9sus4', crd('C A G D F').getName(c).name);
+  
+  Test.assert('C6/9sus(no5)', crd('C A D').getName(c).name);
+  Test.assert('C6/11sus(no5)', crd('C A F').getName(c).name);
+  Test.assert('C6/9sus4(no5)', crd('C A D F').getName(c).name);
+});
+
+Test.add('get chord name - suspended sevenths', function() {
+  Test.assert('C7sus', crd('C G Bb').getName(c).name);
+  Test.assert('Cmaj7sus', crd('C G B').getName(c).name);
+  
+  Test.assert('C7sus4', crd('C F G Bb').getName(c).name); //is this right? wouldn't it be a form of c11?
+  Test.assert('C9sus4', crd('C F G Bb D').getName(c).name); //is this right? wouldn't it be a form of c11?
+});
+
 Test.add('get chord name - others', function() {
   //not sure about below!
   Test.assert('Cadd(m3)', crd('C Eb E G').getName(c).name); //is this right??
   
-  Test.assert('C7/7', crd('C E G A Bb').getName(c).name); //this is C13. Maybe I meant C E G Bb B ?? Would that be C7add7?
+  Test.assert('C7add(maj7)', crd('C E G Bb B').getName(c).name); //this is C13. Maybe I meant C E G Bb B ?? Would that be C7add7?
   
   //need more...
 });

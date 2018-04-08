@@ -22,6 +22,7 @@
       var output = '';
       names.forEach(function(nameInfo) {
         output += `Root=${nameInfo.notes[0].note.getName(useFlats)}  =>  ${nameInfo.name}\n`;
+        output += `  Score: ${nameInfo.score}\n`;
         output += `  Intervals found:\n`;
         nameInfo.notes.forEach((note)=> output += `    ${note.interval}: ${note.note.getName(useFlats)}\n`);
         
