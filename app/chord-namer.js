@@ -226,9 +226,9 @@ function Chord(notes) {
     if(!intervals[ROOT]) {
       verbose.push('root is not present. pretending like it is.')
       intervals[ROOT] = true;
-      consumed[ROOT] = true;
       score -= 20;
     }
+    consumed[ROOT] = true;
     noteDetails.push({interval: 'R', note: rootNote});
     
     if(!intervals[BASS]) {
