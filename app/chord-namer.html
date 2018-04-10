@@ -5,7 +5,7 @@
 <script src="chord-namer.js"></script>
 <script>
   $(function() {
-    $('#notes').on('change', function() {
+    $('#notes,#root,#bass').on('change', function() {
       var useFlats = $('#useFlats')[0].checked;
       
       var notes = [];
@@ -16,8 +16,20 @@
         return;
       }
       
+      var rootNote = $('#root').val();
+      if(rootNote === '')
+        rootNote = null;
+      else
+        rootNote = new Note(rootNote);
+      
+      var bassNote = $('#bass').val();
+      if(bassNote === '')
+        bassNote = null;
+      else
+        bassNote = new Note(bassNote);
+      
       var chord = new Chord(notes);
-      var names = chord.getNames();
+      var names = chord.getNames(useFlats, rootNote, bassNote);
       
       var output = '';
       names.forEach(function(nameInfo) {
@@ -36,9 +48,11 @@
     
     $('#useFlats').on('change', function() {
       var useFlats = this.checked;
-      $('#notes .note label').each(function() {
-        $this = $(this);
-        $this.text(new Note($this.text().trim()).getName(useFlats));
+      $('#notes .note label, #options #root>option, #options #bass>option').each(function() {
+        var $this = $(this);
+        var name = $this.text().trim();
+        if(name !== '--')
+          $this.text(new Note($this.text().trim()).getName(useFlats));
       });
       $('#notes').trigger('change');
     });
@@ -52,6 +66,9 @@
   height: 20px;
   width: 20px;
   margin-bottom: 30px;
+}
+#options select {
+  font: inherit;
 }
 #notes {
   font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,sans-serif;
@@ -85,6 +102,40 @@
 
 <div id="options">
   Options: <input type="checkbox" id="useFlats" /> <label for="useFlats">Flats</label>
+  |
+  Root:
+  <select id="root">
+    <option value="">--</option>
+    <option value="C" >C</option>
+    <option value="C#">C#</option>
+    <option value="D" >D</option>
+    <option value="D#">D#</option>
+    <option value="E" >E</option>
+    <option value="F" >F</option>
+    <option value="F#">F#</option>
+    <option value="G" >G</option>
+    <option value="G#">G#</option>
+    <option value="A" >A</option>
+    <option value="A#">A#</option>
+    <option value="B" >B</option>
+  </select>
+  |
+  Bass:
+  <select id="bass">
+    <option value="">--</option>
+    <option value="C" >C</option>
+    <option value="C#">C#</option>
+    <option value="D" >D</option>
+    <option value="D#">D#</option>
+    <option value="E" >E</option>
+    <option value="F" >F</option>
+    <option value="F#">F#</option>
+    <option value="G" >G</option>
+    <option value="G#">G#</option>
+    <option value="A" >A</option>
+    <option value="A#">A#</option>
+    <option value="B" >B</option>
+  </select>
 </div>
 
 <div id="notes">
