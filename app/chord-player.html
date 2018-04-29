@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="chord-namer.js"></script>
+<script src="chord-player.js"></script>
+<link rel="stylesheet" href="chord-player.css" />
+<title>Chord-o-matic Chord Player</title>
+</head>
+<body>
+
+<div id="guitar-area">
+  <div id="guitar">
+    <div id="headstock" data-fret="0"></div>
+    <div id="fretboard">
+      <div class="fret fret-1" data-fret="1"></div>
+      <div class="fret fret-2" data-fret="2"></div>
+      <div class="fret fret-3" data-fret="3"></div>
+      <div class="fret fret-4" data-fret="4"></div>
+      <div class="fret fret-5" data-fret="5"></div>
+      <div class="fret fret-6" data-fret="6"></div>
+      <div class="fret fret-7" data-fret="7"></div>
+      <div class="fret fret-8" data-fret="8"></div>
+      <div class="fret fret-9" data-fret="9"></div>
+      <div class="fret fret-10" data-fret="10"></div>
+      <div class="fret fret-11" data-fret="11"></div>
+      <div class="fret fret-12" data-fret="12"></div>
+    </div>
+    <div id="pick-area">
+      
+    </div>
+    
+    <!--
+    <div id="strings">
+      
+    </div>
+    -->
+  </div>
+</div>
+<div id="controls">
+  <h1 class="title">Chord-o-matic Chord Player</h1>
+  <!--
+  <div id="options">
+    Options: <input type="checkbox" id="useFlats" /> <label for="useFlats">Flats</label>
+    | <input type="checkbox" id="leftHanded" /> <label for="leftHanded">Left-Handed</label>
+    <br/>
+    Instrument/Tuning:
+    <select id="instrument">
+      <option value="E2 A2 D3 G3 B3 E4" selected>Guitar - Standard</option>
+      <option value="D2 A2 D3 G3 B3 E4">Guitar - Drop D</option>
+      <option value="D2 A2 D3 Gb3 A3 D4">Guitar - Open D</option>
+      <option value="B1 E2 A2 D3 G3 B3 E4">7-String Guitar - Standard</option>
+      <option value="G4 C4 E4 A4">Ukulele - Standard</option>
+      <option value="A4 D4 F#4 B4">Ukulele - D6</option>
+      <option value="D3 G3 B3 E4">Ukulele - Baritone</option>
+      <option value="G3 D4 A4 E5">Mandolin - Standard</option>
+      <option value="E1 A1 D2 G2">Bass Guitar - Standard</option>
+      <option value="B0 E1 A1 D2 G2">5-String Bass - Standard</option>
+      <option value="CUSTOM:E2 A2 D3 G3 B3 E4">Custom</option>
+    </select>
+    <br/>
+    Alter tuning:
+    <select id="tuning">
+      <option value="-4">down two steps</option>
+      <option value="-3">down three half-steps</option>
+      <option value="-2">down whole step</option>
+      <option value="-1">down half-step</option>
+      <option value="0" selected>None</option>
+      <option value="1">up half-step</option>
+      <option value="2">up whole step</option>
+    </select>
+    <br/>
+    Capo:
+    <select id="capo">
+      <option value="0" selected>None</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+      <option value="10">11</option>
+      <option value="11">11</option>
+    </select>
+    <br/>
+    
+  </div>
+
+  <div id="guitar"></div>
+  <div id="chords-played"></div>
+  <div id="chords-true"></div>
+
+  <div id="audio"></div>
+  -->
+  <!-- <audio id="string-0" src="audio/E2/00.mp3" preload /> -->
+</div>
+
+</body>
+</html>
