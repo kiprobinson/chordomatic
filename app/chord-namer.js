@@ -72,6 +72,11 @@ function Note(note) {
  * A Pitch is a combination of a Note and an octave, i.e. "C2", "Eb4", "F#0"
  */
 function Pitch(note, octave) {
+  if(('string' === typeof note) && ('undefined' === typeof octave) && note.match(/^[a-g][b#]?\d/i)) {
+    //string constructor
+    octave = Number(note.substr(note.length - 1));
+    note = new Note(note.substr(0, note.length - 1));
+  }
   if(!(note instanceof Note))
     throw new Error(`Parameter 'note' is invalid: ${note}`);
   if(!Number.isInteger(octave) || octave < 0 || octave > 8)

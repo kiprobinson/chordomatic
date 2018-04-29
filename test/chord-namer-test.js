@@ -194,6 +194,15 @@ Test.add('create pitch', function() {
   Test.assert('F#3', new Pitch(new Note('Gb'), 3).getName());
 });
 
+Test.add('create pitch from string', function() {
+  Test.assert('C0', new Pitch('C0').getName());
+  Test.assert('B8', new Pitch('B8').getName());
+  Test.assert('G#5', new Pitch('G#5').getName());
+  Test.assert('F#3', new Pitch('Gb3').getName());
+  Test.assert('B2', new Pitch('b2').getName());
+  Test.assert('A#4', new Pitch('bB4').getName());
+});
+
 Test.add('create pitch negative tests', function() {
   Test.assertException(()=>new Pitch(new Note('B'), -1), 'make a pitch with negative octave');
   Test.assertException(()=>new Pitch(new Note('C'), 9), 'make a pitch over octave 8');

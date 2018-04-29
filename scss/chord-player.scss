@@ -1,0 +1,122 @@
+@import "node_modules/mathsass/dist/math";
+
+$guitarAreaWidth: 400px;
+$guitarWidth: 180px;
+$pickAreaHeight: 100px;
+$headstockHeight: 50px;
+$noteLabelRadius: 10px;
+@mixin fretHeight($n){
+  height: 100% * 2 * (pow(2, (1-$n)/12) - pow(2, -$n/12));
+}
+
+
+*, :after, :before {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  font-family: Arial,sans;
+  background-color: #222;
+  color: white;
+}
+#guitar-area {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: $guitarAreaWidth;
+  height: 100%;
+  
+  #guitar {
+    background-color: brown;
+    position: absolute;
+    margin: 0;
+    top: 0;
+    left: ($guitarAreaWidth - $guitarWidth) / 2;
+    height: 100%;
+    width: $guitarWidth;
+    
+    #headstock {
+      background-color: brown;
+      height: $headstockHeight;
+      position: relative;
+      border-bottom: 10px solid black;
+    }
+    
+    #fretboard {
+      height: calc(100% - #{$pickAreaHeight + $headstockHeight});
+      .fret {
+        border-bottom: 3px solid yellow;
+        position: relative;
+        
+        @for $i from 1 through 12 {
+          &.fret-#{$i} { @include fretHeight($i) }
+        }
+        
+        &.fret-3, &.fret-5, &.fret-7, &.fret-9, &.fret-12 {
+          background-image: url('img/fretboard-dots-1.svg');
+          background-position: center;
+          background-repeat: no-repeat;
+          background-size: contain;
+        }
+        &.fret-12 {
+          background-image: url('img/fretboard-dots-2.svg');
+        }
+      }
+    }
+    
+    #headstock .note, #fretboard .note {
+      position: absolute;
+      height:100%;
+      top: 0;
+      .note-label {
+        display: none;
+        position: absolute;
+        top: calc(50% - #{$noteLabelRadius});
+        left: calc(50% - #{$noteLabelRadius});
+        width: $noteLabelRadius * 2;
+        height: $noteLabelRadius * 2;
+        border-radius: $noteLabelRadius;
+        background-color: red;
+        overflow: hidden;
+        font-size: $noteLabelRadius;
+        font-weight: bold;
+        cursor: default;
+        
+        //to center text vertically and horizontally because CSS is dumb
+        line-height: $noteLabelRadius * 2;
+        text-align: center;
+      }
+      
+      &.active .note-label {
+        display: block;
+      }
+    }
+    
+    #pick-area {
+      background-color: black;
+      height: $pickAreaHeight;
+    }
+  }
+  
+  #strings {
+    background-color: pink;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: $guitarWidth;
+  }
+}
+
+#controls {
+  position: absolute;
+  top: 0;
+  left: 400px;
+  width: calc(100% - #{$guitarAreaWidth});
+  height: 100%;
+  
+  text-align: center;
+}
