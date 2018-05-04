@@ -111,12 +111,7 @@ body {
     width: $guitarWidth;
     
     .string {
-      height: 100%;
-      top: 0;
       position: absolute;
-      //background-image: url('img/string.svg');
-      //background-repeat: no-repeat;
-      //background-size: 100% 100%;
       
       svg {
         width: 100%;
