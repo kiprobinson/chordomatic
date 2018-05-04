@@ -120,6 +120,13 @@ function Pitch(note, octave) {
     
     return this.note.id - that.note.id;
   }
+  
+  /**
+   * Returns the interval from this pitch to that pitch, i.e. the number of half-steps to get from this pitch to that pitch.
+   */
+  this.interval = function(that) {
+    return (that.octave * 12 + that.note.id) - (this.octave * 12 + this.note.id);
+  }
 }
 
 function Chord(notes) {

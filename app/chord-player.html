@@ -30,15 +30,33 @@
       
     </div>
     
-    <!--
     <div id="strings">
-      
+      <!--
+      <div class="string" data-string-id="1"  style="width: calc(100% / 6); left: calc(1 * (100% / 6))">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" baseProfile="full" viewBox="0 0 20 1000" preserveAspectRatio="none">
+          <path d="M10 0 C 19 500, 19 500, 19 1000" stroke="olive" fill="transparent"/>
+        </svg>
+      </div>
+      <div class="string" data-string-id="3"  style="width: calc(100% / 6); left: calc(3 * (100% / 6))">
+        <svg version="1.1" baseProfile="full" viewBox="0 0 20 1000" preserveAspectRatio="none">
+          <path d="M10 0 C 10 500, 10 500, 10 1000" stroke="olive" fill="transparent"/>
+        </svg>
+      </div>
+      <object class="string" data-string-id="1" data="img/string.svg" type="image/svg+xml" style="width: calc(100% / 6); left: calc(1 * (100% / 6))"></object>
+      <object class="string" data-string-id="3" data="img/string.svg" type="image/svg+xml" style="width: calc(100% / 6); left: calc(3 * (100% / 6))"></object>
+      <div class="string" data-string-id="0" style="width: calc(100% / 6); left: calc(0 * (100% / 6))"></div>
+      <div class="string" data-string-id="1" style="width: calc(100% / 6); left: calc(1 * (100% / 6))"></div>
+      <div class="string" data-string-id="2" style="width: calc(100% / 6); left: calc(2 * (100% / 6))"></div>
+      <div class="string" data-string-id="3" style="width: calc(100% / 6); left: calc(3 * (100% / 6))"></div>
+      <div class="string" data-string-id="4" style="width: calc(100% / 6); left: calc(4 * (100% / 6))"></div>
+      <div class="string" data-string-id="5" style="width: calc(100% / 6); left: calc(5 * (100% / 6))"></div>
+      -->
     </div>
-    -->
   </div>
 </div>
 <div id="controls">
   <h1 class="title">Chord-o-matic Chord Player</h1>
+  <button id="test" style="font-size: 3.0em">TEST</button>
   <!--
   <div id="options">
     Options: <input type="checkbox" id="useFlats" /> <label for="useFlats">Flats</label>
@@ -89,13 +107,20 @@
     
   </div>
 
-  <div id="guitar"></div>
   <div id="chords-played"></div>
   <div id="chords-true"></div>
 
-  <div id="audio"></div>
   -->
-  <!-- <audio id="string-0" src="audio/E2/00.mp3" preload /> -->
+  <div id="audio">
+    <!--
+    <audio id="audio-0" src="audio/E2/00.mp3" preload />
+    <audio id="audio-1" src="audio/A2/02.mp3" preload />
+    <audio id="audio-2" src="audio/D3/02.mp3" preload />
+    <audio id="audio-3" src="audio/G3/01.mp3" preload />
+    <audio id="audio-4" src="audio/B3/00.mp3" preload />
+    <audio id="audio-5" src="audio/E4/00.mp3" preload />
+    -->
+  </div>
 </div>
 
 </body>
