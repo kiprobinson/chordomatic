@@ -71,6 +71,7 @@ body {
       position: absolute;
       height:100%;
       top: 0;
+      z-index: 200; //push above the strings
       .note-label {
         display: none;
         position: absolute;
@@ -102,12 +103,26 @@ body {
   }
   
   #strings {
-    background-color: pink;
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
+    z-index: 100;
     width: $guitarWidth;
+    
+    .string {
+      height: 100%;
+      top: 0;
+      position: absolute;
+      //background-image: url('img/string.svg');
+      //background-repeat: no-repeat;
+      //background-size: 100% 100%;
+      
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
   }
 }
 
@@ -119,4 +134,8 @@ body {
   height: 100%;
   
   text-align: center;
+}
+
+#audio {
+  display: none;
 }
