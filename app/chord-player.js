@@ -9,13 +9,14 @@ let ChordPlayer = {
     strings: 'E2 A2 D3 G3 B3 E4'.split(/ /).map(s => new Pitch(s)),
     transpose: 0,
     capo: 0,
-    frets: [ null, null, null, null, null, null ],
+    frets: [ 0, 0, 0, 0, 0, 0 ],
     useFlats: false
   },
   
   init() {
     let $guitar = $('#guitar');
     $guitar.on('click', '.note', ChordPlayer.handleNoteClick);
+    ChordPlayer.setUpPick();
     
     $('#test').on('click', function() {
       //debugger;
@@ -23,6 +24,51 @@ let ChordPlayer = {
     });
     
     ChordPlayer.draw();
+  },
+  
+  setUpPick() {
+    let $pick = $('#pick');
+    let pickWidth = $pick.width();
+    let pickAreaWidth = $('#pick-area').width();
+    let originOffset = -pickWidth / 2;
+    
+    let dragging = false;
+    let pageDragStart = 0;
+    let pickDragStart = 0;
+    $pick.on('mousedown', function(e) {
+      if(e.buttons === 1) {
+        dragging = true;
+        pickDragStart = Number($pick.css('left').replace(/px$/,'')) - originOffset;
+        pageDragStart = e.pageX;
+        
+        //clear text selection, otherwise browser thinks we're trying to drag the selected text too.
+        let selection = window.getSelection ? window.getSelection() : document.selection ? document.selection : null;
+        if(!!selection) selection.empty ? selection.empty() : selection.removeAllRanges();
+      }
+    });
+    $(window).on('mousemove', function(e) {
+      //if we are dragging but somehow the mouse button is not pressed down, stop dragging
+      if(dragging && e.buttons !== 1)
+        dragging = false;
+      if(dragging) {
+        let delta = e.pageX - pageDragStart;
+        let oldPos = $pick.css('left').replace(/px$/,'') - originOffset;
+        let newPos = Math.min(pickAreaWidth, Math.max(0, pickDragStart + delta));
+        if(newPos !== oldPos) {
+          $pick.css('left', (newPos + originOffset) + 'px');
+          
+          //check if we hit any strings and, if so, pluck them
+          ChordPlayer.state.strings.forEach(function(note, stringId) {
+            let pos = (pickAreaWidth/2/ChordPlayer.state.strings.length) * (2*stringId + 1);
+            if((oldPos < pos && pos <= newPos) || (newPos < pos && pos <= oldPos))
+              ChordPlayer.pluckString(stringId);
+          });
+        }
+      }
+    });
+    $(window).on('mouseup', function() {
+      dragging = false;
+    });
   },
   
   draw() {
@@ -40,7 +86,6 @@ let ChordPlayer = {
         
         let $note = $('<div/>').addClass('note').css({width: `calc(100% / ${numStrings})`, left: `calc(${i} * (100% / ${numStrings}))`});
         $note.data({note: pitchName, string: i});
-        //$note.attr({'data-note': pitchName, 'data-string': i});
         if(ChordPlayer.state.frets[i] === fretId)
           $note.addClass('active');
         $note.append($('<div/>').addClass('note-label').text(noteName));
@@ -79,6 +124,8 @@ let ChordPlayer = {
       $activeString.html(SVG);
       $strings.append($activeString);
     }
+    
+    ChordPlayer.state.strings.forEach((note,i) => ChordPlayer.setAudio(i));
   },
   
   handleNoteClick() {

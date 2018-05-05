@@ -1,8 +1,9 @@
 @import "node_modules/mathsass/dist/math";
 
 $guitarAreaWidth: 400px;
-$guitarWidth: 180px;
+$guitarWidth: 240px;
 $pickAreaHeight: 100px;
+$pickPicHeight: 130px;
 $headstockHeight: 50px;
 $noteLabelRadius: 10px;
 @mixin fretHeight($n){
@@ -48,7 +49,7 @@ body {
     #fretboard {
       height: calc(100% - #{$pickAreaHeight + $headstockHeight});
       .fret {
-        border-bottom: 3px solid yellow;
+        border-bottom: 3px solid #dd9;
         position: relative;
         
         @for $i from 1 through 12 {
@@ -97,8 +98,20 @@ body {
     }
     
     #pick-area {
+      position: relative;
       background-color: black;
       height: $pickAreaHeight;
+      #pick {
+        width: $pickAreaHeight;
+        height: $pickAreaHeight;
+        background-image: url(img/pick-pic.png);
+        background-repeat: no-repeat;
+        background-size: contain;
+        position: absolute;
+        top: 0;
+        left: -$pickAreaHeight/2;
+        z-index: 200; //put it above the strings
+      }
     }
   }
   
@@ -124,7 +137,7 @@ body {
 #controls {
   position: absolute;
   top: 0;
-  left: 400px;
+  left: $guitarAreaWidth;
   width: calc(100% - #{$guitarAreaWidth});
   height: 100%;
   
