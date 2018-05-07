@@ -69,6 +69,10 @@ body {
         border-bottom: 3px solid #dd9;
         position: relative;
         
+        &.capo {
+          border-bottom: 10px solid black;
+        }
+        
         @for $i from 1 through 12 {
           &.fret-#{$i} { @include fretHeight($i) }
         }
@@ -101,6 +105,11 @@ body {
       &.active .note-label {
         display: block;
       }
+    }
+    
+    #headstock .note:not(.active) .note-label {
+      display: block;background-color: #ddd;
+      color: #bbb;
     }
     
     #pick-area {
@@ -149,11 +158,16 @@ body {
   
   text-align: center;
   
+  #title {
+    font-size: 2.0em;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
   #chords-played {
     table {
       border-collapse: collapse;
       margin: auto;
-      margin-top: 10px;
       
       tbody td, tbody th {
         border: 1px solid white;

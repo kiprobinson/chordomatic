@@ -30,37 +30,13 @@
       <div id="pick"></div>
     </div>
     
-    <div id="strings">
-      <!--
-      <div class="string" data-string-id="1"  style="width: calc(100% / 6); left: calc(1 * (100% / 6))">
-        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" baseProfile="full" viewBox="0 0 20 1000" preserveAspectRatio="none">
-          <path d="M10 0 C 19 500, 19 500, 19 1000" stroke="olive" fill="transparent"/>
-        </svg>
-      </div>
-      <div class="string" data-string-id="3"  style="width: calc(100% / 6); left: calc(3 * (100% / 6))">
-        <svg version="1.1" baseProfile="full" viewBox="0 0 20 1000" preserveAspectRatio="none">
-          <path d="M10 0 C 10 500, 10 500, 10 1000" stroke="olive" fill="transparent"/>
-        </svg>
-      </div>
-      <object class="string" data-string-id="1" data="img/string.svg" type="image/svg+xml" style="width: calc(100% / 6); left: calc(1 * (100% / 6))"></object>
-      <object class="string" data-string-id="3" data="img/string.svg" type="image/svg+xml" style="width: calc(100% / 6); left: calc(3 * (100% / 6))"></object>
-      <div class="string" data-string-id="0" style="width: calc(100% / 6); left: calc(0 * (100% / 6))"></div>
-      <div class="string" data-string-id="1" style="width: calc(100% / 6); left: calc(1 * (100% / 6))"></div>
-      <div class="string" data-string-id="2" style="width: calc(100% / 6); left: calc(2 * (100% / 6))"></div>
-      <div class="string" data-string-id="3" style="width: calc(100% / 6); left: calc(3 * (100% / 6))"></div>
-      <div class="string" data-string-id="4" style="width: calc(100% / 6); left: calc(4 * (100% / 6))"></div>
-      <div class="string" data-string-id="5" style="width: calc(100% / 6); left: calc(5 * (100% / 6))"></div>
-      -->
-    </div>
+    <div id="strings"></div>
   </div>
 </div>
 <div id="controls">
-  <h1 class="title">Chord-o-matic Chord Player</h1>
+  <div id="title">Chord-o-matic Chord Player</div>
   <!-- <button id="test" style="font-size: 3.0em">TEST</button> -->
-  <div id="chords-played"></div>
-    
-  </div>
-  <!--
+  
   <div id="options">
     Options: <input type="checkbox" id="useFlats" /> <label for="useFlats">Flats</label>
     | <input type="checkbox" id="leftHanded" /> <label for="leftHanded">Left-Handed</label>
@@ -79,6 +55,7 @@
       <option value="B0 E1 A1 D2 G2">5-String Bass - Standard</option>
       <option value="CUSTOM:E2 A2 D3 G3 B3 E4">Custom</option>
     </select>
+    <!--
     <br/>
     Alter tuning:
     <select id="tuning">
@@ -90,6 +67,7 @@
       <option value="1">up half-step</option>
       <option value="2">up whole step</option>
     </select>
+    -->
     <br/>
     Capo:
     <select id="capo">
@@ -109,11 +87,10 @@
     <br/>
     
   </div>
-
+  
   <div id="chords-played"></div>
   <div id="chords-true"></div>
-
-  -->
+  
   <div id="audio"></div>
 </div>
 

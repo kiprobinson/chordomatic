@@ -17,6 +17,7 @@ let ChordPlayer = {
     let $guitar = $('#guitar');
     $guitar.on('click', '.note', ChordPlayer.handleNoteClick);
     ChordPlayer.setUpPick();
+    ChordPlayer.setUpOptions();
     
     $('#test').on('click', function() {
       //debugger;
@@ -71,6 +72,38 @@ let ChordPlayer = {
     });
   },
   
+  setUpOptions() {
+    $('#options #useFlats').on('change', function() {
+      ChordPlayer.state.useFlats = this.checked;
+      ChordPlayer.draw();
+    });
+    $('#options #leftHanded').on('change', function() {
+      ChordPlayer.state.strings.reverse();
+      ChordPlayer.state.frets.reverse();
+      ChordPlayer.draw();
+    });
+    $('#options #instrument').on('change', function() {
+      //TODO: Handle Custom!
+      ChordPlayer.state.strings = $(this).val().split(/ /).map(s => new Pitch(s));
+      ChordPlayer.state.frets = ChordPlayer.state.strings.map(() => null);
+      if($('#options #leftHanded')[0].checked) {
+        ChordPlayer.state.strings.reverse();
+        ChordPlayer.state.frets.reverse();
+      }
+      ChordPlayer.draw();
+    });
+    $('#options #tuning').on('change', function() {
+      ChordPlayer.state.transpose = $(this).val();
+      ChordPlayer.draw();
+    });
+    $('#options #capo').on('change', function() {
+      ChordPlayer.state.capo = $(this).val();
+      ChordPlayer.state.frets = ChordPlayer.state.frets.map(n => n === null ? null : Math.max(ChordPlayer.state.capo, n));
+      ChordPlayer.draw();
+    });
+    
+  },
+  
   draw() {
     let $guitar = $('#guitar');
     let numStrings = ChordPlayer.state.strings.length;
@@ -93,6 +126,11 @@ let ChordPlayer = {
         $fret.append($note);
       }
     });
+    
+    //set capo
+    $('#fretboard .fret.capo').removeClass('capo');
+    if(ChordPlayer.state.capo > 0)
+      $(`#fretboard .fret.fret-${ChordPlayer.state.capo}`).addClass('capo');
     
     const SVG = '<svg baseProfile="full" viewBox="0 0 20 1000" preserveAspectRatio="none">'
               + '  <path d="M10 0 C 10 500, 10 500, 10 1000" stroke="olive" fill="transparent" />'
@@ -126,17 +164,26 @@ let ChordPlayer = {
     }
     
     ChordPlayer.state.strings.forEach((note,stringId) => ChordPlayer.setAudio(stringId));
+    ChordPlayer.displayChords();
   },
   
   handleNoteClick() {
-    let $note = $(this);
     let $guitar = $('#guitar');
+    
+    let $note = $(this);
+    let fretId = $note.parent().data('fret');
     let stringId = $note.data('string');
+    //if we click below the capo, act like we clicked on the capo'd fret
+    if(fretId < ChordPlayer.state.capo) {
+      fretId = ChordPlayer.state.capo;
+      $note = $guitar.find(`#fretboard .fret.fret-${ChordPlayer.state.capo} .note`).filter(function() {return $(this).data('string') === stringId});
+    }
+    
     let setActive = !$note.hasClass('active');
     $guitar.find('.note.active').filter(function() {return $(this).data('string') === stringId}).removeClass('active');
     if(setActive) {
       $note.addClass('active');
-      ChordPlayer.state.frets[stringId] = $note.parent().data('fret');
+      ChordPlayer.state.frets[stringId] = Math.max($note.parent().data('fret'), ChordPlayer.state.capo);
     }
     else {
       ChordPlayer.state.frets[stringId] = null;
@@ -222,7 +269,7 @@ let ChordPlayer = {
     if(notes.length <= 0)
       return;
     
-    let chords = new Chord(notes).getNames(false, null, bassPitch.note);
+    let chords = new Chord(notes).getNames(ChordPlayer.state.useFlats, null, bassPitch.note);
     
     let output = '<table>';
     output += `<tr><th>Name</th><th colspan="${notes.length}">Intervals</th></tr>`;
@@ -231,7 +278,7 @@ let ChordPlayer = {
       output += '<tr>';
       output += `<td>${chordInfo.name}</td>`;
       for(let j = 0; j < chordInfo.notes.length; j++)
-        output += `<td><div class="note-label">${chordInfo.notes[j].note}</div>${chordInfo.notes[j].interval}</td>`;
+        output += `<td><div class="note-label">${chordInfo.notes[j].note.getName(ChordPlayer.state.useFlats)}</div>${chordInfo.notes[j].interval}</td>`;
       output += '</tr>';
     }
     output += '</table>';
