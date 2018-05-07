@@ -9,7 +9,7 @@ let ChordPlayer = {
     strings: 'E2 A2 D3 G3 B3 E4'.split(/ /).map(s => new Pitch(s)),
     transpose: 0,
     capo: 0,
-    frets: [ 0, 0, 0, 0, 0, 0 ],
+    frets: [ null, null, null, null, null, null ],
     useFlats: false
   },
   
@@ -80,7 +80,7 @@ let ChordPlayer = {
       
       $fret.empty();
       for(let i = 0; i < numStrings; i++) {
-        let pitch = ChordPlayer.state.strings[i].transpose(fretId);
+        let pitch = ChordPlayer.getFrettedPitch(i, fretId);
         let pitchName = pitch.getName();
         let noteName = pitch.note.getName(ChordPlayer.state.useFlats);
         
@@ -125,7 +125,7 @@ let ChordPlayer = {
       $strings.append($activeString);
     }
     
-    ChordPlayer.state.strings.forEach((note,i) => ChordPlayer.setAudio(i));
+    ChordPlayer.state.strings.forEach((note,stringId) => ChordPlayer.setAudio(stringId));
   },
   
   handleNoteClick() {
@@ -142,6 +142,7 @@ let ChordPlayer = {
       ChordPlayer.state.frets[stringId] = null;
     }
     
+    ChordPlayer.displayChords();
     ChordPlayer.setAudio(stringId);
     
     //update the height of the active/inactive portion of this string
@@ -197,6 +198,56 @@ let ChordPlayer = {
     }
     $audio[0].pause();
     $audio.attr('src', `audio/${best}.mp3`);
+  },
+  
+  displayChords() {
+    let $chordsPlayed = $('#chords-played');
+    $chordsPlayed.empty();
+    
+    let bassPitch = null;
+    let notes = [];
+    for(let i = 0; i < ChordPlayer.state.strings.length; i++) {
+      let pitch = ChordPlayer.getFrettedPitch(i);
+      if(pitch === null)
+        continue;
+      
+      if(notes.findIndex(note => note.equals(pitch.note)) >= 0)
+        continue;
+      
+      notes.push(pitch.note);
+      if(bassPitch === null || pitch.compareTo(bassPitch) < 0)
+        bassPitch = pitch;
+    }
+    
+    if(notes.length <= 0)
+      return;
+    
+    let chords = new Chord(notes).getNames(false, null, bassPitch.note);
+    
+    let output = '<table>';
+    output += `<tr><th>Name</th><th colspan="${notes.length}">Intervals</th></tr>`;
+    for(let i = 0; i < chords.length; i++) {
+      let chordInfo = chords[i];
+      output += '<tr>';
+      output += `<td>${chordInfo.name}</td>`;
+      for(let j = 0; j < chordInfo.notes.length; j++)
+        output += `<td><div class="note-label">${chordInfo.notes[j].note}</div>${chordInfo.notes[j].interval}</td>`;
+      output += '</tr>';
+    }
+    output += '</table>';
+    $chordsPlayed.html(output);
+  },
+  
+  /**
+   * Returns the current fretted pitch on the given string. Returns null if that string is not played.
+   * @param fretId if passed, returns the pitch at that fret, whether it is fretted or not.
+   */
+  getFrettedPitch(stringId, fretId=null) {
+    if(fretId === null)
+      fretId = ChordPlayer.state.frets[stringId];
+    if(fretId === null)
+      return null;
+    return ChordPlayer.state.strings[stringId].transpose(fretId);
   },
   
   /**

@@ -5,7 +5,7 @@ $guitarWidth: 240px;
 $pickAreaHeight: 100px;
 $pickPicHeight: 130px;
 $headstockHeight: 50px;
-$noteLabelRadius: 10px;
+$noteLabelRadius: 12px;
 @mixin fretHeight($n){
   height: 100% * 2 * (pow(2, (1-$n)/12) - pow(2, -$n/12));
 }
@@ -23,6 +23,23 @@ body {
   background-color: #222;
   color: white;
 }
+
+.note-label {
+  display: block;
+  background-color: red;
+  color: white;
+  width: $noteLabelRadius * 2;
+  height: $noteLabelRadius * 2;
+  border-radius: $noteLabelRadius;
+  overflow: hidden;
+  font-size: $noteLabelRadius;
+  font-weight: bold;
+  
+  //to center text vertically and horizontally because CSS is dumb
+  line-height: $noteLabelRadius * 2;
+  text-align: center;
+}
+
 #guitar-area {
   position: absolute;
   top: 0;
@@ -78,18 +95,7 @@ body {
         position: absolute;
         top: calc(50% - #{$noteLabelRadius});
         left: calc(50% - #{$noteLabelRadius});
-        width: $noteLabelRadius * 2;
-        height: $noteLabelRadius * 2;
-        border-radius: $noteLabelRadius;
-        background-color: red;
-        overflow: hidden;
-        font-size: $noteLabelRadius;
-        font-weight: bold;
         cursor: default;
-        
-        //to center text vertically and horizontally because CSS is dumb
-        line-height: $noteLabelRadius * 2;
-        text-align: center;
       }
       
       &.active .note-label {
@@ -142,6 +148,24 @@ body {
   height: 100%;
   
   text-align: center;
+  
+  #chords-played {
+    table {
+      border-collapse: collapse;
+      margin: auto;
+      margin-top: 10px;
+      
+      tbody td, tbody th {
+        border: 1px solid white;
+        padding: 10px 20px;
+        
+        .note-label {
+          margin: auto;
+          margin-bottom: 10px;
+        }
+      }
+    }
+  }
 }
 
 #audio {

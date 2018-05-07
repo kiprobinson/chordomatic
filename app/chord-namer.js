@@ -233,7 +233,7 @@ function Chord(notes) {
     const BASS = rootNote.interval(bassNote);
     
     //names for intervals (although some could have different names, like 2 could also be 9 in some contexts)
-    const INTERVAL_NAMES = [ 'R', '(b2)', '2', '(m3)', '3', '4', '(b5)', '5', '#5', '6', '(dom7)', '(maj7)' ];
+    const INTERVAL_NAMES = [ 'R', 'b2', '2', 'm3', '3', '4', 'b5', '5', '#5', '6', 'dom7', 'maj7' ];
     
     if(!intervals[ROOT]) {
       verbose.push('root is not present. pretending like it is.')
@@ -380,6 +380,7 @@ function Chord(notes) {
         }
         else if (intervals[SIXTH]) {
           verbose.push('6/9 chord - found sixth and ninth, but no seventh');
+          noteDetails.push({interval: '6', note: rootNote.transpose(SIXTH)});
           consumed[SIXTH] = true;
           intervalName = '6/9';
         }
@@ -535,6 +536,7 @@ function Chord(notes) {
         }
         else if (intervals[SIXTH] && !isDim) {
           verbose.push('6/9 chord - found sixth and ninth, but no seventh');
+          noteDetails.push({interval: '6', note: rootNote.transpose(SIXTH)});
           consumed[SIXTH] = true;
           intervalName = '6/9';
         }
@@ -603,9 +605,25 @@ function Chord(notes) {
         score += 10;
       }
       else {
-        verbose.push('missing fifth');
-        omissions += '(no5)';
-        score -= 10;
+        if(intervals[FLAT_FIFTH]) {
+          verbose.push('found flat fifth');
+          noteDetails.push({interval: 'b5', note: rootNote.transpose(FLAT_FIFTH)});
+          consumed[FLAT_FIFTH] = true;
+          score -= 3;
+          altFifth += '(b5)';
+        }
+        else if(intervals[SHARP_FIFTH]) {
+          verbose.push('found sharp fifth');
+          noteDetails.push({interval: '#5', note: rootNote.transpose(SHARP_FIFTH)});
+          consumed[SHARP_FIFTH] = true;
+          score -= 3;
+          altFifth += '(#5)';
+        }
+        else {
+          verbose.push('missing fifth');
+          omissions += '(no5)';
+          score -= 10;
+        }
       }
       
       let isSus7 = false;
@@ -725,6 +743,8 @@ function Chord(notes) {
         let intervalName = INTERVAL_NAMES[i];
         verbose.push(`found ${intervalName} we have not used`);
         noteDetails.push({interval: intervalName, note: rootNote.transpose(i)});
+        if(intervalName.match(/^[a-z]/))
+          intervalName = `(${intervalName})`;
         added += `add${intervalName}`;
         score -= 10;
       }
