@@ -97,7 +97,7 @@ let ChordPlayer = {
       ChordPlayer.draw();
     });
     $('#options #capo').on('change', function() {
-      ChordPlayer.state.capo = $(this).val();
+      ChordPlayer.state.capo = Number($(this).val());
       ChordPlayer.state.frets = ChordPlayer.state.frets.map(n => n === null ? null : Math.max(ChordPlayer.state.capo, n));
       ChordPlayer.draw();
     });
@@ -107,6 +107,7 @@ let ChordPlayer = {
   draw() {
     let $guitar = $('#guitar');
     let numStrings = ChordPlayer.state.strings.length;
+    
     $guitar.find('#headstock, #fretboard .fret').each(function() {
       let $fret = $(this);
       let fretId = $fret.data('fret');
@@ -125,12 +126,10 @@ let ChordPlayer = {
         
         $fret.append($note);
       }
+      
+      if(ChordPlayer.state.capo === fretId)
+        $fret.append($('<div id="capo"/>'));
     });
-    
-    //set capo
-    $('#fretboard .fret.capo').removeClass('capo');
-    if(ChordPlayer.state.capo > 0)
-      $(`#fretboard .fret.fret-${ChordPlayer.state.capo}`).addClass('capo');
     
     const SVG = '<svg baseProfile="full" viewBox="0 0 20 1000" preserveAspectRatio="none">'
               + '  <path d="M10 0 C 10 500, 10 500, 10 1000" stroke="olive" fill="transparent" />'

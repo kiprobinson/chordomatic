@@ -61,6 +61,10 @@ body {
       height: $headstockHeight;
       position: relative;
       border-bottom: 10px solid black;
+      
+      #capo {
+        display: none;
+      }
     }
     
     #fretboard {
@@ -68,10 +72,6 @@ body {
       .fret {
         border-bottom: 3px solid #dd9;
         position: relative;
-        
-        &.capo {
-          border-bottom: 10px solid black;
-        }
         
         @for $i from 1 through 12 {
           &.fret-#{$i} { @include fretHeight($i) }
@@ -85,6 +85,16 @@ body {
         }
         &.fret-12 {
           background-image: url('img/fretboard-dots-2.svg');
+        }
+        
+        #capo {
+          position: absolute;
+          bottom: 0;
+          height: 20px;
+          max-height: 30%;
+          width: 100%;
+          background-color: black;
+          z-index: 150; //above the strings
         }
       }
     }
