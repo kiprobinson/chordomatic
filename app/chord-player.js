@@ -83,8 +83,15 @@ let ChordPlayer = {
       ChordPlayer.draw();
     });
     $('#options #instrument').on('change', function() {
-      //TODO: Handle Custom!
-      ChordPlayer.state.strings = $(this).val().split(/ /).map(s => new Pitch(s));
+      let pitchesList = $(this).val();
+      if(pitchesList === 'CUSTOM') {
+        pitchesList = prompt('Enter a space delimited list of the pitches for the strings. For example, "E2 A#2 Db3 G3 B3 E4"');
+        if(!pitchesList.match(/^(([abcdefg]|[abdeg]b|[acdfg]#)\d( |$)){2,7}/i)) {
+          alert("Sorry! Invalid pitches!");
+          return;
+        }
+      }
+      ChordPlayer.state.strings = pitchesList.split(/ /).map(s => new Pitch(s));
       ChordPlayer.state.frets = ChordPlayer.state.strings.map(() => null);
       if($('#options #leftHanded')[0].checked) {
         ChordPlayer.state.strings.reverse();
@@ -93,7 +100,7 @@ let ChordPlayer = {
       ChordPlayer.draw();
     });
     $('#options #tuning').on('change', function() {
-      ChordPlayer.state.transpose = $(this).val();
+      ChordPlayer.state.transpose = Number($(this).val());
       ChordPlayer.draw();
     });
     $('#options #capo').on('change', function() {
@@ -110,7 +117,7 @@ let ChordPlayer = {
     
     $guitar.find('#headstock, #fretboard .fret').each(function() {
       let $fret = $(this);
-      let fretId = $fret.data('fret');
+      let fretId = Number($fret.data('fret'));
       
       $fret.empty();
       for(let i = 0; i < numStrings; i++) {
@@ -145,7 +152,6 @@ let ChordPlayer = {
       $staticString.css({
         width: `calc(100% / ${numStrings})`,
         left: `calc(${i} * (100% / ${numStrings}))`,
-        top: 0,
         height: `${staticStringHeight}%`
       });
       $staticString.html(SVG);
@@ -226,7 +232,7 @@ let ChordPlayer = {
     let fretId = ChordPlayer.state.frets[stringId] || 0;
     let best = '';
     let diff = 999; //number of frets to get from plucked fret to recorded fret
-    let pitch = ChordPlayer.state.strings[stringId].transpose(fretId);
+    let pitch = ChordPlayer.state.strings[stringId].transpose(fretId + ChordPlayer.state.transpose);
     let audioClips = AUDIO_MAP[pitch.getName()];
     for(let i = 0; i < audioClips.length; i++) {
       let audioClip = audioClips[i];
@@ -293,7 +299,7 @@ let ChordPlayer = {
       fretId = ChordPlayer.state.frets[stringId];
     if(fretId === null)
       return null;
-    return ChordPlayer.state.strings[stringId].transpose(fretId);
+    return ChordPlayer.state.strings[stringId].transpose(fretId + ChordPlayer.state.transpose);
   },
   
   /**
