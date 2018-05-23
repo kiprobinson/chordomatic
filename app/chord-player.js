@@ -138,15 +138,18 @@ let ChordPlayer = {
         $fret.append($('<div id="capo"/>'));
     });
     
-    const SVG = '<svg baseProfile="full" viewBox="0 0 20 1000" preserveAspectRatio="none">'
-              + '  <path d="M10 0 C 10 500, 10 500, 10 1000" stroke="olive" fill="transparent" />'
-              + '</svg>'
-    ;
+    const SVG = $('#stringSvg').html();
+    
+    //strings with pitch greater than this will be steel, otherwise they will be bronze
+    const MAX_BRONZE_STRING = new Pitch('G#3');
+    
     let $strings = $guitar.find('#strings');
     $strings.empty();
     for(let i = 0; i < numStrings; i++) {
       //two strings- one for the part above the fingered fret (which won't vibrate), one for the part below (which will)
       let staticStringHeight = ChordPlayer.getStaticStringHeight(i);
+      let stringWidth = ChordPlayer.getStringWidth(i);
+      let stringMaterial = (ChordPlayer.state.strings[i].compareTo(MAX_BRONZE_STRING) <= 0 ? 'bronze' : 'steel');
       
       let $staticString = $('<div/>').addClass(`string static string-${i}`).data('stringId', i);
       $staticString.css({
@@ -155,6 +158,7 @@ let ChordPlayer = {
         height: `${staticStringHeight}%`
       });
       $staticString.html(SVG);
+      $staticString.addClass(stringMaterial).find('path.wire').css('stroke-width', stringWidth + 'px');
       $strings.append($staticString);
       
       let $activeString = $('<div/>').addClass(`string active string-${i}`).data('stringId', i);
@@ -165,11 +169,30 @@ let ChordPlayer = {
         height: `${(100-staticStringHeight)}%`
       });
       $activeString.html(SVG);
+      $activeString.addClass(stringMaterial).find('path.wire').css('stroke-width', stringWidth + 'px');
       $strings.append($activeString);
     }
     
     ChordPlayer.state.strings.forEach((note,stringId) => ChordPlayer.setAudio(stringId));
     ChordPlayer.displayChords();
+  },
+  
+  /**
+   * Calculates the width (thickness) of a particular string.
+   */
+  getStringWidth(stringId) {
+    let pitch = ChordPlayer.state.strings[stringId];
+    const MIN_PITCH = new Pitch('B0');
+    const MAX_PITCH = new Pitch('E5');
+    const MIN_WIDTH = 0.5;
+    const MAX_WIDTH = 4;
+    
+    if(pitch.compareTo(MIN_PITCH) < 0)
+      return MAX_WIDTH;
+    if(pitch.compareTo(MAX_PITCH) > 0)
+      return MIN_WIDTH;
+    
+    return (MIN_WIDTH - MAX_WIDTH) * MIN_PITCH.interval(pitch) / MIN_PITCH.interval(MAX_PITCH) + MAX_WIDTH;
   },
   
   handleNoteClick() {
@@ -311,6 +334,9 @@ let ChordPlayer = {
     return 100 * ($fret.offset().top + $fret.outerHeight()) / window.innerHeight;
   },
   
+  /**
+   * Callback to render one frame of animation.
+   */
   animateFrame() {
     const MAX_AMPLITUDE = 9;
     const MAX_TIME = 2 * 1000;
@@ -324,7 +350,7 @@ let ChordPlayer = {
       let amplitude = MAX_AMPLITUDE * Math.max(0, 1 - t/MAX_TIME);
       let value = 10 + amplitude * Math.cos(FREQ * t);
       
-      $this.find('svg path:first').attr('d', `M10 0 C ${value} 500, ${value} 500, ${value} 1000`);
+      $this.find('svg path.wire').attr('d', `M10 0 C ${value} 500, ${value} 500, ${value} 1000`);
       if(amplitude <= 0)
         $this.removeClass('animated');
     });

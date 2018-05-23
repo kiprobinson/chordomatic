@@ -164,6 +164,13 @@ body {
         height: 100%;
       }
     }
+    
+    .string.bronze svg path.wire {
+      stroke: olive;
+    }
+    .string.steel svg path.wire {
+      stroke: gray;
+    }
   }
 }
 
