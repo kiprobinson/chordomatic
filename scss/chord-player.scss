@@ -48,7 +48,6 @@ body {
   height: 100%;
   
   #guitar {
-    background-color: brown;
     position: absolute;
     margin: 0;
     top: 0;
@@ -56,8 +55,14 @@ body {
     height: 100%;
     width: $guitarWidth;
     
+    background-color: #482D25;
+    background-image: url('img/fretboard.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    
     #headstock {
-      background-color: brown;
+      //background-color: brown;
       height: $headstockHeight;
       position: relative;
       border-bottom: 10px solid black;
