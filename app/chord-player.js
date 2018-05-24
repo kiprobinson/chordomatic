@@ -51,7 +51,9 @@ let ChordPlayer = {
       //if we are dragging but somehow the mouse button is not pressed down, stop dragging
       if(dragging && e.buttons !== 1)
         dragging = false;
+      
       if(dragging) {
+        e.preventDefault(); //prevents the drag from selecting text
         let delta = e.pageX - pageDragStart;
         let oldPos = $pick.css('left').replace(/px$/,'') - originOffset;
         let newPos = Math.min(pickAreaWidth, Math.max(0, pickDragStart + delta));
