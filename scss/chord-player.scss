@@ -62,7 +62,6 @@ body {
     background-repeat: no-repeat;
     
     #headstock {
-      //background-color: brown;
       height: $headstockHeight;
       position: relative;
       border-bottom: 10px solid black;
@@ -166,10 +165,10 @@ body {
     }
     
     .string.bronze svg path.wire {
-      stroke: olive;
+      stroke: #daa520;
     }
     .string.steel svg path.wire {
-      stroke: gray;
+      stroke: #aaa;
     }
   }
 }

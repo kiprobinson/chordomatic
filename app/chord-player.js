@@ -343,16 +343,34 @@ let ChordPlayer = {
     const MAX_AMPLITUDE = 9;
     const MAX_TIME = 2 * 1000;
     const NOW = Date.now();
-    const FREQ = 20 * (2 * Math.PI / 1000);
+    
+    //all strings vibrate at 19 Hz... true frequency was way too much. Using 19 because it is prime, and
+    //not a factor of 50 or 60 (common monitor refresh rates), so less chance of it appearing not to move
+    //(i.e. the helicopter blade on film effect)
+    const FREQ = 19 * (2 * Math.PI / 1000);
+    const FRETBOARD_HEIGHT = $('#fretboard').height();
+    const PICKAREA_HEIGHT = $('#pick-area').height();
+    
     let $animatedPaths = $('#strings .string.animated');
     $animatedPaths.each(function() {
       let $this = $(this);
       let start = $this.data('start') || 0;
       let t = NOW - start;
-      let amplitude = MAX_AMPLITUDE * Math.max(0, 1 - t/MAX_TIME);
+      
+      //double the amplitude, because the quadratic curve only makes it halfway to the control point
+      let amplitude = MAX_AMPLITUDE * Math.max(0, 1 - t/MAX_TIME) * 2;
       let value = 10 + amplitude * Math.cos(FREQ * t);
       
-      $this.find('svg path.wire').attr('d', `M10 0 C ${value} 500, ${value} 500, ${value} 1000`);
+      let thisHeight = $this.height();
+      
+      //true length of string is twice fretboard height (since fretboard goes to 12 frets). The part above
+      //the nut does not count as part of the string. some of that is not visible (extends beyond bottom of screen).
+      //length of un-vibrating part of string (nut to fretted string): fretboard_height + pickarea_height - this_height
+      //length of vibrating part of string: 2*fretboard_height - unvibrating_string_len = fretboard_height - pickarea_height + this_height
+      //convert to string coordinates: 1000 * vibrating_string_len / this_height = 1000 * (fretboard_height - pickarea_height + this_height) / this_height
+      let stringLen = 1000 * (FRETBOARD_HEIGHT - PICKAREA_HEIGHT + thisHeight)/thisHeight;
+      
+      $this.find('svg path.wire').attr('d', `M10 0 Q ${value} ${stringLen/2}, 10 ${stringLen}`);
       if(amplitude <= 0)
         $this.removeClass('animated');
     });
