@@ -24,6 +24,11 @@ body {
   color: white;
 }
 
+a, a:visited {
+  color: orange;
+  text-decoration: none;
+}
+
 .note-label {
   display: block;
   background-color: red;
@@ -207,6 +212,14 @@ body {
         }
       }
     }
+  }
+  
+  #copyright {
+    position: absolute;
+    bottom: 0;
+    padding-bottom: 3px;
+    width: 100%;
+    font-size: 0.9em;
   }
 }
 
