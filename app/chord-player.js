@@ -128,7 +128,7 @@ let ChordPlayer = {
         let noteName = pitch.note.getName(ChordPlayer.state.useFlats);
         
         let $note = $('<div/>').addClass('note').css({width: `calc(100% / ${numStrings})`, left: `calc(${i} * (100% / ${numStrings}))`});
-        $note.data({note: pitchName, string: i});
+        $note.data({pitch: pitchName, string: i});
         if(ChordPlayer.state.frets[i] === fretId)
           $note.addClass('active');
         $note.append($('<div/>').addClass('note-label').text(noteName));
@@ -207,6 +207,12 @@ let ChordPlayer = {
     if(fretId < ChordPlayer.state.capo) {
       fretId = ChordPlayer.state.capo;
       $note = $guitar.find(`#fretboard .fret.fret-${ChordPlayer.state.capo} .note`).filter(function() {return $(this).data('string') === stringId});
+    }
+    
+    let pitchName = $note.data('pitch');
+    if(!AUDIO_MAP[pitchName]) {
+      console.log(`Error: no audio for pitch: ${pitchName}`);
+      return;
     }
     
     let setActive = !$note.hasClass('active');
