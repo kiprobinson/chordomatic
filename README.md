@@ -11,5 +11,5 @@ There are two parts to this:
 * The app works very poorly in mobile at the moment. I don't have much interest in improving this, although I'd welcome contributions if anyone has that area of expertise.
 * The chord names for chords you would ever actually use are pretty decent, but if you throw garbage at it you will get some weird results.
 
-##Legal
+## Legal
 The audio recordings are my own. Produced on a Breedlove Stage Series concert acoustic guitar. Pitches below B1 and above A5 are produced by pitch-shifting other recordings. If you use them anywhere else, please respect the license and give me credit--it was a lot of tedious work to generate these.
