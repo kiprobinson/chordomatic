@@ -25,6 +25,10 @@ let ChordPlayer = {
     });
     
     ChordPlayer.draw();
+    
+    //warn mobile users...
+    if(navigator.userAgent.match(/android|blackberry|iphone|ipad|ipod|opera mini|iemobile/i))
+      setTimeout(() => alert("Hey there!\nJust so you know, this thing doesn't work all that well on mobile devices!"), 100);
   },
   
   setUpPick() {
@@ -34,42 +38,56 @@ let ChordPlayer = {
     let originOffset = -pickWidth / 2;
     
     let dragging = false;
+    let isTouch = false;
     let pageDragStart = 0;
     let pickDragStart = 0;
-    $pick.on('mousedown', function(e) {
-      if(e.buttons === 1) {
+    $pick.on('mousedown touchstart', function(e) {
+      if((e.type === 'mousedown' && e.buttons === 1) || (e.type === 'touchstart' && e.changedTouches.length === 1)) {
         dragging = true;
+        isTouch = (e.type === 'touchstart');
+        
         pickDragStart = Number($pick.css('left').replace(/px$/,'')) - originOffset;
-        pageDragStart = e.pageX;
+        pageDragStart = (isTouch ? e.changedTouches[0].pageX : e.pageX);
         
         //clear text selection, otherwise browser thinks we're trying to drag the selected text too.
         let selection = window.getSelection ? window.getSelection() : document.selection ? document.selection : null;
         if(!!selection) selection.empty ? selection.empty() : selection.removeAllRanges();
       }
     });
-    $(window).on('mousemove', function(e) {
-      //if we are dragging but somehow the mouse button is not pressed down, stop dragging
-      if(dragging && e.buttons !== 1)
-        dragging = false;
+    $(window).on('mousemove touchmove', function(e) {
+      if(!dragging)
+        return;
       
-      if(dragging) {
-        e.preventDefault(); //prevents the drag from selecting text
-        let delta = e.pageX - pageDragStart;
-        let oldPos = $pick.css('left').replace(/px$/,'') - originOffset;
-        let newPos = Math.min(pickAreaWidth, Math.max(0, pickDragStart + delta));
-        if(newPos !== oldPos) {
-          $pick.css('left', (newPos + originOffset) + 'px');
-          
-          //check if we hit any strings and, if so, pluck them
-          ChordPlayer.state.strings.forEach(function(note, stringId) {
-            let pos = (pickAreaWidth/2/ChordPlayer.state.strings.length) * (2*stringId + 1);
-            if((oldPos < pos && pos <= newPos) || (newPos < pos && pos <= oldPos))
-              ChordPlayer.pluckString(stringId);
-          });
-        }
+      //for some reason i'm getting both mousemove and touchmove events even for touch browser? ignore if we get wrong type of event...
+      if((isTouch && e.type !== 'touchmove') || (!isTouch && e.type !== 'mousemove'))
+        return;
+      
+      //if we are dragging but somehow the mouse button is not pressed down, stop dragging. (Or if touch-based and user has added another finger)
+      if(dragging && ((isTouch && e.changedTouches.length !== 1) || (!isTouch && e.buttons !== 1))) {
+        dragging = false;
+        return;
+      }
+      
+      //prevents the drag from selecting text. (touchmove event does not allow preventDefault.)
+      if(!isTouch)
+        e.preventDefault();
+      
+      let pageX = (isTouch ? e.changedTouches[0].pageX : e.pageX);
+      let delta = pageX - pageDragStart;
+      let oldPos = $pick.css('left').replace(/px$/,'') - originOffset;
+      let newPos = Math.min(pickAreaWidth, Math.max(0, pickDragStart + delta));
+      if(newPos !== oldPos) {
+        $pick.css('left', (newPos + originOffset) + 'px');
+        
+        //check if we hit any strings and, if so, pluck them
+        ChordPlayer.state.strings.forEach(function(note, stringId) {
+          let pos = (pickAreaWidth/2/ChordPlayer.state.strings.length) * (2*stringId + 1);
+          if((oldPos < pos && pos <= newPos) || (newPos < pos && pos <= oldPos))
+            ChordPlayer.pluckString(stringId);
+        });
       }
     });
-    $(window).on('mouseup', function() {
+    $(window).on('mouseup touchend touchcancel', function(e) {
       dragging = false;
     });
   },

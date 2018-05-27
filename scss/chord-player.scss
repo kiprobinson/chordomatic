@@ -3,9 +3,13 @@
 $guitarAreaWidth: 400px;
 $guitarWidth: 240px;
 $pickAreaHeight: 100px;
-$pickPicHeight: 130px;
 $headstockHeight: 50px;
 $noteLabelRadius: 12px;
+
+$mobileBreak: 1024px;
+$mobileGuitarWidth: $guitarAreaWidth - $pickAreaHeight/2;
+$mobileHeadstockHeight: $headstockHeight*2;
+
 @mixin fretHeight($n){
   height: 100% * 2 * (pow(2, (1-$n)/12) - pow(2, -$n/12));
 }
@@ -24,6 +28,18 @@ body {
   color: white;
 }
 
+@media (max-width: $mobileBreak) {
+  body {
+    font-size: 1.75em;
+  }
+  input[type=checkbox] {
+    width: 1.75em;
+    height: 1.75em;
+  }
+  select {
+    font-size: inherit;
+  }
+}
 a, a:visited {
   color: orange;
   text-decoration: none;
@@ -43,6 +59,15 @@ a, a:visited {
   //to center text vertically and horizontally because CSS is dumb
   line-height: $noteLabelRadius * 2;
   text-align: center;
+  
+  //double size of note labels in mobile
+  @media (max-width: $mobileBreak) {
+    width: $noteLabelRadius * 2 * 2;
+    height: $noteLabelRadius * 2 * 2;
+    border-radius: $noteLabelRadius * 2;
+    font-size: $noteLabelRadius * 2;
+    line-height: $noteLabelRadius * 2 * 2;
+  }
 }
 
 #guitar-area {
@@ -56,9 +81,14 @@ a, a:visited {
     position: absolute;
     margin: 0;
     top: 0;
-    left: ($guitarAreaWidth - $guitarWidth) / 2;
     height: 100%;
+    left: ($guitarAreaWidth - $guitarWidth) / 2;
     width: $guitarWidth;
+    
+    @media (max-width: $mobileBreak) {
+      left: ($guitarAreaWidth - $mobileGuitarWidth) / 2;
+      width: $mobileGuitarWidth;
+    }
     
     background-color: #482D25;
     background-image: url('img/fretboard.jpg');
@@ -68,6 +98,7 @@ a, a:visited {
     
     #headstock {
       height: $headstockHeight;
+      @media (max-width: $mobileBreak) { height: $mobileHeadstockHeight; }
       position: relative;
       border-bottom: 10px solid black;
       
@@ -78,6 +109,7 @@ a, a:visited {
     
     #fretboard {
       height: calc(100% - #{$pickAreaHeight + $headstockHeight});
+      @media (max-width: $mobileBreak) { height: calc(100% - #{$pickAreaHeight + $mobileHeadstockHeight}); }
       .fret {
         border-bottom: 3px solid #dd9;
         position: relative;
@@ -119,6 +151,12 @@ a, a:visited {
         top: calc(50% - #{$noteLabelRadius});
         left: calc(50% - #{$noteLabelRadius});
         cursor: default;
+        
+        //double size of note labels in mobile
+        @media (max-width: $mobileBreak) {
+          top: calc(50% - #{$noteLabelRadius}*2);
+          left: calc(50% - #{$noteLabelRadius}*2);
+        }
       }
       
       &.active .note-label {
@@ -157,6 +195,9 @@ a, a:visited {
     z-index: 100;
     width: $guitarWidth;
     
+    @media (max-width: $mobileBreak) {
+      width: $mobileGuitarWidth;
+    }
     .string {
       position: absolute;
       &.static {
@@ -184,6 +225,7 @@ a, a:visited {
   left: $guitarAreaWidth;
   width: calc(100% - #{$guitarAreaWidth});
   height: 100%;
+  overflow: auto;
   
   text-align: center;
   
@@ -226,3 +268,4 @@ a, a:visited {
 #audio {
   display: none;
 }
+
