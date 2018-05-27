@@ -1,7 +1,7 @@
+![A ninja playing guitar on a guitar pick](https://raw.githubusercontent.com/kiprobinson/chordomatic/master/app/img/pick-pic.png)
+
 # chord-o-matic
 HTML5 Guitar Chord Identifier/Player
-
-![A ninja playing guitar on a guitar pick](https://raw.githubusercontent.com/kiprobinson/chordomatic/master/app/img/pick-pic.png)
 
 There are two parts to this:
 1. **Chord Player**: This is an interative app where you can click on the frets of the guitar to hear what that chord would sound like, and to see the possible names for that chord. Live preview: [tilde.ampersand.space/chord-o-matic/chord-player.html](https://tilde.ampersand.space/chord-o-matic/chord-player.html)
