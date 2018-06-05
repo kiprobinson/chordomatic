@@ -10,7 +10,8 @@ let ChordPlayer = {
     transpose: 0,
     capo: 0,
     frets: [ null, null, null, null, null, null ],
-    useFlats: false
+    useFlats: false,
+    animating: false
   },
   
   init() {
@@ -274,7 +275,9 @@ let ChordPlayer = {
     else {
       $activeString.data('start', 0);
     }
-    ChordPlayer.animateFrame();
+    
+    if(!ChordPlayer.state.animating)
+      requestAnimationFrame(ChordPlayer.animateFrame);
   },
   
   setAudio(stringId) {
@@ -375,6 +378,7 @@ let ChordPlayer = {
     const FRETBOARD_HEIGHT = $('#fretboard').height();
     const PICKAREA_HEIGHT = $('#pick-area').height();
     
+    ChordPlayer.state.animating = true;
     let $animatedPaths = $('#strings .string.animated');
     $animatedPaths.each(function() {
       let $this = $(this);
@@ -401,6 +405,8 @@ let ChordPlayer = {
     
     if($animatedPaths.length > 0)
       requestAnimationFrame(ChordPlayer.animateFrame);
+    else
+      ChordPlayer.state.animating = false;
   }
 }
 
