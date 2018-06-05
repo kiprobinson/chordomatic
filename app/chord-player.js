@@ -125,8 +125,10 @@ let ChordPlayer = {
       ChordPlayer.draw();
     });
     $('#options #capo').on('change', function() {
-      ChordPlayer.state.capo = Number($(this).val());
-      ChordPlayer.state.frets = ChordPlayer.state.frets.map(n => n === null ? null : Math.max(ChordPlayer.state.capo, n));
+      let newCapo = Number($(this).val())
+      let diff = newCapo - ChordPlayer.state.capo;
+      ChordPlayer.state.capo = newCapo;
+      ChordPlayer.state.frets = ChordPlayer.state.frets.map(n => n === null ? null : Math.max(ChordPlayer.state.capo, Math.min(12, n + diff)));
       ChordPlayer.draw();
     });
     
