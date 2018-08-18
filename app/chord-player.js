@@ -106,8 +106,8 @@ let ChordPlayer = {
     $('#options #instrument').on('change', function() {
       let pitchesList = $(this).val();
       if(pitchesList === 'CUSTOM') {
-        pitchesList = prompt('Enter a space delimited list of the pitches for the strings. For example, "E2 A#2 Db3 G3 B3 E4"');
-        if(!pitchesList.match(/^(([abcdefg]|[abdeg]b|[acdfg]#)\d( |$)){2,7}/i)) {
+        pitchesList = prompt('Enter a space delimited list of the pitches for the strings. For example, "E2 A#2 Db3 G3 B3 E4"\n\nFor reference, standard guitar tuning is E2 A2 D3 G3 B3 E4');
+        if(!pitchesList.match(/^(([abcdefg]|[abdeg]b|[acdfg]#)\d( |$)){2,7}$/i)) {
           alert("Sorry! Invalid pitches!");
           return;
         }
