@@ -10,8 +10,8 @@ let ChordPlayer = {
     transpose: 0,
     capo: 0,
     frets: [ null, null, null, null, null, null ],
-    useFlats: false,
-    animating: false
+    animating: false,
+    options: {useFlats: false}
   },
   
   init() {
@@ -42,6 +42,12 @@ let ChordPlayer = {
     let isTouch = false;
     let pageDragStart = 0;
     let pickDragStart = 0;
+    
+    let clearSelection = function() {
+      let selection = window.getSelection ? window.getSelection() : document.selection ? document.selection : null;
+      if(!!selection) selection.empty ? selection.empty() : selection.removeAllRanges();
+    }
+    
     $pick.on('mousedown touchstart', function(e) {
       if((e.type === 'mousedown' && e.buttons === 1) || (e.type === 'touchstart' && e.changedTouches.length === 1)) {
         dragging = true;
@@ -51,8 +57,7 @@ let ChordPlayer = {
         pageDragStart = (isTouch ? e.changedTouches[0].pageX : e.pageX);
         
         //clear text selection, otherwise browser thinks we're trying to drag the selected text too.
-        let selection = window.getSelection ? window.getSelection() : document.selection ? document.selection : null;
-        if(!!selection) selection.empty ? selection.empty() : selection.removeAllRanges();
+        clearSelection();
       }
     });
     $(window).on('mousemove touchmove', function(e) {
@@ -70,8 +75,10 @@ let ChordPlayer = {
       }
       
       //prevents the drag from selecting text. (touchmove event does not allow preventDefault.)
-      if(!isTouch)
+      if(!isTouch) {
         e.preventDefault();
+        clearSelection();
+      }
       
       let pageX = (isTouch ? e.changedTouches[0].pageX : e.pageX);
       let delta = pageX - pageDragStart;
@@ -90,12 +97,13 @@ let ChordPlayer = {
     });
     $(window).on('mouseup touchend touchcancel', function(e) {
       dragging = false;
+      //clearSelection(); //just in case...
     });
   },
   
   setUpOptions() {
     $('#options #useFlats').on('change', function() {
-      ChordPlayer.state.useFlats = this.checked;
+      ChordPlayer.state.options.useFlats = this.checked;
       ChordPlayer.draw();
     });
     $('#options #leftHanded').on('change', function() {
@@ -146,7 +154,7 @@ let ChordPlayer = {
       for(let i = 0; i < numStrings; i++) {
         let pitch = ChordPlayer.getFrettedPitch(i, fretId);
         let pitchName = pitch.getName();
-        let noteName = pitch.note.getName(ChordPlayer.state.useFlats);
+        let noteName = pitch.note.getName(ChordPlayer.state.options);
         
         let $note = $('<div/>').addClass('note').css({width: `calc(100% / ${numStrings})`, left: `calc(${i} * (100% / ${numStrings}))`});
         $note.data({pitch: pitchName, string: i});
@@ -328,7 +336,7 @@ let ChordPlayer = {
     if(notes.length <= 0)
       return;
     
-    let chords = new Chord(notes).getNames(ChordPlayer.state.useFlats, null, bassPitch.note);
+    let chords = new Chord(notes).getNames(ChordPlayer.state.options, null, bassPitch.note);
     
     let output = '<table>';
     output += `<tr><th>Name</th><th colspan="${notes.length}">Intervals</th></tr>`;
@@ -337,7 +345,7 @@ let ChordPlayer = {
       output += '<tr>';
       output += `<td>${chordInfo.name}</td>`;
       for(let j = 0; j < chordInfo.notes.length; j++)
-        output += `<td><div class="note-label">${chordInfo.notes[j].note.getName(ChordPlayer.state.useFlats)}</div>${chordInfo.notes[j].interval}</td>`;
+        output += `<td><div class="note-label">${chordInfo.notes[j].note.getName(ChordPlayer.state.options)}</div>${chordInfo.notes[j].interval}</td>`;
       output += '</tr>';
     }
     output += '</table>';

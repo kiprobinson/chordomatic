@@ -32,14 +32,14 @@
         bassNote = new Note(bassNote);
       
       var chord = new Chord(notes);
-      var names = chord.getNames(useFlats, rootNote, bassNote);
+      var names = chord.getNames({useFlats:useFlats}, rootNote, bassNote);
       
       var output = '';
       names.forEach(function(nameInfo) {
-        output += `Root=${nameInfo.notes[0].note.getName(useFlats)}  =>  ${nameInfo.name}\n`;
+        output += `Root=${nameInfo.notes[0].note.getName({useFlats:useFlats})}  =>  ${nameInfo.name}\n`;
         output += `  Score: ${nameInfo.score}\n`;
         output += `  Intervals found:\n`;
-        nameInfo.notes.forEach((note)=> output += `    ${note.interval}: ${note.note.getName(useFlats)}\n`);
+        nameInfo.notes.forEach((note)=> output += `    ${note.interval}: ${note.note.getName({useFlats:useFlats})}\n`);
         
         output += `  Reason for name:\n`;
         nameInfo.verbose.forEach((s)=> output += `    ${s}\n`);
@@ -55,7 +55,7 @@
         var $this = $(this);
         var name = $this.text().trim();
         if(name !== '--')
-          $this.text(new Note($this.text().trim()).getName(useFlats));
+          $this.text(new Note($this.text().trim()).getName({useFlats:useFlats}));
       });
       $('#notes').trigger('change');
     });

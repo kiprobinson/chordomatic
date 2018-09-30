@@ -1,4 +1,4 @@
-"use strict";
+﻿"use strict";
 
 //shortcuts to make tests less tedious to write...
 var c = new Note('C');
@@ -47,43 +47,72 @@ Test.add('create note from string', function() {
 
 
 Test.add('get note names as flats', function() {
-  Test.assert('Bb', new Note('A#').getName(true));
-  Test.assert('A#', new Note('A#').getName(false));
-  Test.assert('Bb', new Note('A#').getName(1));
-  Test.assert('A#', new Note('A#').getName(0));
+  Test.assert('Bb', new Note('A#').getName({useFlats:true}));
+  Test.assert('A#', new Note('A#').getName({useFlats:false}));
   
-  Test.assert('Bb', new Note('BB').getName(true));
-  Test.assert('Bb', new Note('Bb').getName(true));
-  Test.assert('Bb', new Note('bB').getName(true));
-  Test.assert('Bb', new Note('bb').getName(true));
+  Test.assert('Bb', new Note('BB').getName({useFlats:true}));
+  Test.assert('Bb', new Note('Bb').getName({useFlats:true}));
+  Test.assert('Bb', new Note('bB').getName({useFlats:true}));
+  Test.assert('Bb', new Note('bb').getName({useFlats:true}));
   
-  Test.assert('Ab', new Note('AB').getName(true));
-  Test.assert('Ab', new Note('Ab').getName(true));
-  Test.assert('Ab', new Note('aB').getName(true));
-  Test.assert('Ab', new Note('ab').getName(true));
+  Test.assert('Ab', new Note('AB').getName({useFlats:true}));
+  Test.assert('Ab', new Note('Ab').getName({useFlats:true}));
+  Test.assert('Ab', new Note('aB').getName({useFlats:true}));
+  Test.assert('Ab', new Note('ab').getName({useFlats:true}));
   
-  Test.assert('Db', new Note('db').getName(true));
-  Test.assert('D',  new Note('d' ).getName(true));
-  Test.assert('Eb', new Note('eb').getName(true));
-  Test.assert('E',  new Note('e' ).getName(true));
-  Test.assert('F',  new Note('f' ).getName(true));
-  Test.assert('Gb', new Note('gb').getName(true));
-  Test.assert('G',  new Note('g' ).getName(true));
-  Test.assert('Ab', new Note('ab').getName(true));
-  Test.assert('A',  new Note('a' ).getName(true));
-  Test.assert('Bb', new Note('bb').getName(true));
-  Test.assert('B',  new Note('b' ).getName(true));
-  Test.assert('Db', new Note('c#').getName(true));
-  Test.assert('D',  new Note('d' ).getName(true));
-  Test.assert('Eb', new Note('d#').getName(true));
-  Test.assert('E',  new Note('e' ).getName(true));
-  Test.assert('F',  new Note('f' ).getName(true));
-  Test.assert('Gb', new Note('f#').getName(true));
-  Test.assert('G',  new Note('g' ).getName(true));
-  Test.assert('Ab', new Note('g#').getName(true));
-  Test.assert('A',  new Note('a' ).getName(true));
-  Test.assert('Bb', new Note('a#').getName(true));
-  Test.assert('B',  new Note('b' ).getName(true));
+  Test.assert('Db', new Note('db').getName({useFlats:true}));
+  Test.assert('D',  new Note('d' ).getName({useFlats:true}));
+  Test.assert('Eb', new Note('eb').getName({useFlats:true}));
+  Test.assert('E',  new Note('e' ).getName({useFlats:true}));
+  Test.assert('F',  new Note('f' ).getName({useFlats:true}));
+  Test.assert('Gb', new Note('gb').getName({useFlats:true}));
+  Test.assert('G',  new Note('g' ).getName({useFlats:true}));
+  Test.assert('Ab', new Note('ab').getName({useFlats:true}));
+  Test.assert('A',  new Note('a' ).getName({useFlats:true}));
+  Test.assert('Bb', new Note('bb').getName({useFlats:true}));
+  Test.assert('B',  new Note('b' ).getName({useFlats:true}));
+  Test.assert('Db', new Note('c#').getName({useFlats:true}));
+  Test.assert('D',  new Note('d' ).getName({useFlats:true}));
+  Test.assert('Eb', new Note('d#').getName({useFlats:true}));
+  Test.assert('E',  new Note('e' ).getName({useFlats:true}));
+  Test.assert('F',  new Note('f' ).getName({useFlats:true}));
+  Test.assert('Gb', new Note('f#').getName({useFlats:true}));
+  Test.assert('G',  new Note('g' ).getName({useFlats:true}));
+  Test.assert('Ab', new Note('g#').getName({useFlats:true}));
+  Test.assert('A',  new Note('a' ).getName({useFlats:true}));
+  Test.assert('Bb', new Note('a#').getName({useFlats:true}));
+  Test.assert('B',  new Note('b' ).getName({useFlats:true}));
+});
+
+Test.add('create/name notes with unicode', function() {
+  Test.assert('A#', new Note('B♭').getName());
+  Test.assert('A#', new Note('b♭').getName());
+  Test.assert('G#', new Note('A♭').getName());
+  Test.assert('G#', new Note('a♭').getName());
+  Test.assert('A#', new Note('A♯').getName());
+  Test.assert('A#', new Note('a♯').getName());
+  
+  Test.assert('A♯', new Note('B♭').getName({useFlats:false, unicodeAccidentals: true}));
+  Test.assert('A♯', new Note('b♭').getName({useFlats:false, unicodeAccidentals: true}));
+  Test.assert('G♯', new Note('A♭').getName({useFlats:false, unicodeAccidentals: true}));
+  Test.assert('G♯', new Note('a♭').getName({useFlats:false, unicodeAccidentals: true}));
+  Test.assert('A♯', new Note('A♯').getName({useFlats:false, unicodeAccidentals: true}));
+  Test.assert('A♯', new Note('a♯').getName({useFlats:false, unicodeAccidentals: true}));
+  
+  Test.assert('Bb', new Note('B♭').getName({useFlats:true}));
+  Test.assert('Bb', new Note('b♭').getName({useFlats:true}));
+  Test.assert('Ab', new Note('A♭').getName({useFlats:true}));
+  Test.assert('Ab', new Note('a♭').getName({useFlats:true}));
+  Test.assert('Bb', new Note('A♯').getName({useFlats:true}));
+  Test.assert('Bb', new Note('a♯').getName({useFlats:true}));
+  
+  Test.assert('B♭', new Note('B♭').getName({useFlats:true, unicodeAccidentals: true}));
+  Test.assert('B♭', new Note('b♭').getName({useFlats:true, unicodeAccidentals: true}));
+  Test.assert('A♭', new Note('A♭').getName({useFlats:true, unicodeAccidentals: true}));
+  Test.assert('A♭', new Note('a♭').getName({useFlats:true, unicodeAccidentals: true}));
+  Test.assert('B♭', new Note('A♯').getName({useFlats:true, unicodeAccidentals: true}));
+  Test.assert('B♭', new Note('a♯').getName({useFlats:true, unicodeAccidentals: true}));
+  
 });
 
 Test.add('negative tests for creating notes', function() {
@@ -212,10 +241,10 @@ Test.add('create pitch negative tests', function() {
 });
 
 Test.add('get pitch name as flats', function() {
-  Test.assert('C0', new Pitch(new Note('C'), 0).getName(true));
-  Test.assert('B8', new Pitch(new Note('B'), 8).getName(true));
-  Test.assert('Ab3', new Pitch(new Note('G#'), 3).getName(true));
-  Test.assert('Gb5', new Pitch(new Note('Gb'), 5).getName(true));
+  Test.assert('C0', new Pitch(new Note('C'), 0).getName({useFlats:true}));
+  Test.assert('B8', new Pitch(new Note('B'), 8).getName({useFlats:true}));
+  Test.assert('Ab3', new Pitch(new Note('G#'), 3).getName({useFlats:true}));
+  Test.assert('Gb5', new Pitch(new Note('Gb'), 5).getName({useFlats:true}));
 });
 
 Test.add('transpose pitch', function() {
@@ -462,5 +491,42 @@ Test.add('get chord name - others', function() {
   Test.assert('C7add(maj7)', crd('C E G Bb B').getName(c).name); //this is C13. Maybe I meant C E G Bb B ?? Would that be C7add7?
   
   //need more...
+});
+
+Test.add('chord options', function() {
+  //these tests all use F# as the root note, because it is the only major chord where all notes have accidentals,
+  //making the test for different symbols easier
+  let r = new Note('F#');
+  
+  //below test assertions generated by spreadsheet ChordNamerOptionsTestMatrix.ods
+  let testMatrix = {"F#":[{o:{}, x:"F#"},{o:{useFlats:true}, x:"Gb"}],"F# G":[{o:{}, x:"F#~G"},{o:{useFlats:true}, x:"Gb~G"}],"F# G#":[{o:{}, x:"F#~G#"},{o:{useFlats:true}, x:"Gb~Ab"}],"F# A":[{o:{}, x:"F#m(no5)"},{o:{useFlats:true}, x:"Gbm(no5)"}],"F# A#":[{o:{}, x:"F#(no5)"},{o:{useFlats:true}, x:"Gb(no5)"}],"F# B":[{o:{}, x:"F#~B"},{o:{useFlats:true}, x:"Gb~B"}],"F# C":[{o:{}, x:"F#dim5"},{o:{useFlats:true}, x:"Gbdim5"}],"F# C#":[{o:{}, x:"F#5"},{o:{useFlats:true}, x:"Gb5"}],"F# D":[{o:{}, x:"F#aug5"},{o:{useFlats:true}, x:"Gbaug5"}],"F# D#":[{o:{}, x:"F#~D#"},{o:{useFlats:true}, x:"Gb~Eb"}],"F# E":[{o:{}, x:"F#~E"},{o:{useFlats:true}, x:"Gb~E"}],"F# F":[{o:{}, x:"F#~F"},{o:{useFlats:true}, x:"Gb~F"}],"F# A# C#":[{o:{}, x:"F#"},{o:{useFlats:true}, x:"Gb"}],"F# A C#":[{o:{}, x:"F#m"},{o:{useFlats:true}, x:"Gbm"}],"F# A# D":[{o:{}, x:"F#aug"},{o:{useFlats:true}, x:"Gbaug"}],"F# A C":[{o:{}, x:"F#dim"},{o:{useFlats:true}, x:"Gbdim"}],"F# A# C":[{o:{}, x:"F#(b5)"},{o:{useFlats:true}, x:"Gb(b5)"}],"F# A D":[{o:{}, x:"F#m(#5)"},{o:{useFlats:true}, x:"Gbm(#5)"}],"F# A# C# E":[{o:{}, x:"F#7"},{o:{useFlats:true}, x:"Gb7"}],"F# A C# E":[{o:{}, x:"F#m7"},{o:{useFlats:true}, x:"Gbm7"}],"F# A# C# F":[{o:{}, x:"F#maj7"},{o:{useFlats:true}, x:"Gbmaj7"}],"F# A C# F":[{o:{}, x:"F#m(maj7)"},{o:{useFlats:true}, x:"Gbm(maj7)"}],"F# A# D E":[{o:{}, x:"F#aug7"},{o:{useFlats:true}, x:"Gbaug7"}],"F# A# D F":[{o:{}, x:"F#aug(maj7)"},{o:{useFlats:true}, x:"Gbaug(maj7)"}],"F# A C D#":[{o:{}, x:"F#dim7"},{o:{useFlats:true}, x:"Gbdim7"}],"F# A C E":[{o:{}, x:"F#m7(b5)"},{o:{useFlats:true}, x:"Gbm7(b5)"}],"F# A C F":[{o:{}, x:"F#dim(maj7)"},{o:{useFlats:true}, x:"Gbdim(maj7)"}],"F# A# C# E G#":[{o:{}, x:"F#9"},{o:{useFlats:true}, x:"Gb9"}],"F# A# C# F G#":[{o:{}, x:"F#maj9"},{o:{useFlats:true}, x:"Gbmaj9"}],"F# A# C# G#":[{o:{}, x:"F#add9"},{o:{useFlats:true}, x:"Gbadd9"}],"F# A C# E G#":[{o:{}, x:"F#m9"},{o:{useFlats:true}, x:"Gbm9"}],"F# A C# F G#":[{o:{}, x:"F#m(maj9)"},{o:{useFlats:true}, x:"Gbm(maj9)"}],"F# A C# G#":[{o:{}, x:"F#m(add9)"},{o:{useFlats:true}, x:"Gbm(add9)"}],"F# A# C# E A":[{o:{}, x:"F#7(#9)"},{o:{useFlats:true}, x:"Gb7(#9)"}],"F# A# C# F A":[{o:{}, x:"F#maj7(#9)"},{o:{useFlats:true}, x:"Gbmaj7(#9)"}],"F# A C D# G#":[{o:{}, x:"F#dim9"},{o:{useFlats:true}, x:"Gbdim9"}],"F# A C G#":[{o:{}, x:"F#dim(add9)"},{o:{useFlats:true}, x:"Gbdim(add9)"}],"F# A# D D# G#":[{o:{}, x:"F#aug6/9"},{o:{useFlats:true}, x:"Gbaug6/9"}],"F# A# D E G#":[{o:{}, x:"F#aug9"},{o:{useFlats:true}, x:"Gbaug9"}],"F# A# D F G#":[{o:{}, x:"F#aug(maj9)"},{o:{useFlats:true}, x:"Gbaug(maj9)"}],"F# A# D G#":[{o:{}, x:"F#aug(add9)"},{o:{useFlats:true}, x:"Gbaug(add9)"}],"F# A# C# E G# B":[{o:{}, x:"F#11"},{o:{useFlats:true}, x:"Gb11"}],"F# A# C# E B":[{o:{}, x:"F#11"},{o:{useFlats:true}, x:"Gb11"}],"F# A# C# B":[{o:{}, x:"F#add11"},{o:{useFlats:true}, x:"Gbadd11"}],"F# A# C# F G# B":[{o:{}, x:"F#maj11"},{o:{useFlats:true}, x:"Gbmaj11"}],"F# A# C# F B":[{o:{}, x:"F#maj11"},{o:{useFlats:true}, x:"Gbmaj11"}],"F# A C# E G# B":[{o:{}, x:"F#m11"},{o:{useFlats:true}, x:"Gbm11"}],"F# A C# E B":[{o:{}, x:"F#m11"},{o:{useFlats:true}, x:"Gbm11"}],"F# A C# B":[{o:{}, x:"F#m(add11)"},{o:{useFlats:true}, x:"Gbm(add11)"}],"F# A C# F G# B":[{o:{}, x:"F#m(maj11)"},{o:{useFlats:true}, x:"Gbm(maj11)"}],"F# A C# F B":[{o:{}, x:"F#m(maj11)"},{o:{useFlats:true}, x:"Gbm(maj11)"}],"F# A C D# G# B":[{o:{}, x:"F#dim11"},{o:{useFlats:true}, x:"Gbdim11"}],"F# A C D# B":[{o:{}, x:"F#dim11"},{o:{useFlats:true}, x:"Gbdim11"}],"F# A C B":[{o:{}, x:"F#dim(add11)"},{o:{useFlats:true}, x:"Gbdim(add11)"}],"F# A# D E G# B":[{o:{}, x:"F#aug11"},{o:{useFlats:true}, x:"Gbaug11"}],"F# A# D E B":[{o:{}, x:"F#aug11"},{o:{useFlats:true}, x:"Gbaug11"}],"F# A# D B":[{o:{}, x:"F#aug(add11)"},{o:{useFlats:true}, x:"Gbaug(add11)"}],"F# A# D F G# B":[{o:{}, x:"F#aug(maj11)"},{o:{useFlats:true}, x:"Gbaug(maj11)"}],"F# A# D F B":[{o:{}, x:"F#aug(maj11)"},{o:{useFlats:true}, x:"Gbaug(maj11)"}],"F# A# C# E G# B D#":[{o:{}, x:"F#13"},{o:{useFlats:true}, x:"Gb13"}],"F# A# C# E G# D#":[{o:{}, x:"F#13"},{o:{useFlats:true}, x:"Gb13"}],"F# A# C# E B D#":[{o:{}, x:"F#13"},{o:{useFlats:true}, x:"Gb13"}],"F# A# C# E D#":[{o:{}, x:"F#13"},{o:{useFlats:true}, x:"Gb13"}],"F# A# C# F G# B D#":[{o:{}, x:"F#maj13"},{o:{useFlats:true}, x:"Gbmaj13"}],"F# A# C# F G# D#":[{o:{}, x:"F#maj13"},{o:{useFlats:true}, x:"Gbmaj13"}],"F# A# C# F B D#":[{o:{}, x:"F#maj13"},{o:{useFlats:true}, x:"Gbmaj13"}],"F# A# C# F D#":[{o:{}, x:"F#maj13"},{o:{useFlats:true}, x:"Gbmaj13"}],"F# A C# E G# B D#":[{o:{}, x:"F#m13"},{o:{useFlats:true}, x:"Gbm13"}],"F# A C# E G# D#":[{o:{}, x:"F#m13"},{o:{useFlats:true}, x:"Gbm13"}],"F# A C# E B D#":[{o:{}, x:"F#m13"},{o:{useFlats:true}, x:"Gbm13"}],"F# A C# E D#":[{o:{}, x:"F#m13"},{o:{useFlats:true}, x:"Gbm13"}],"F# A C# F G# B D#":[{o:{}, x:"F#m(maj13)"},{o:{useFlats:true}, x:"Gbm(maj13)"}],"F# A C# F G# D#":[{o:{}, x:"F#m(maj13)"},{o:{useFlats:true}, x:"Gbm(maj13)"}],"F# A C# F B D#":[{o:{}, x:"F#m(maj13)"},{o:{useFlats:true}, x:"Gbm(maj13)"}],"F# A C# F D#":[{o:{}, x:"F#m(maj13)"},{o:{useFlats:true}, x:"Gbm(maj13)"}],"F# A# D E G# B D#":[{o:{}, x:"F#aug13"},{o:{useFlats:true}, x:"Gbaug13"}],"F# A# D E G# D#":[{o:{}, x:"F#aug13"},{o:{useFlats:true}, x:"Gbaug13"}],"F# A# D E B D#":[{o:{}, x:"F#aug13"},{o:{useFlats:true}, x:"Gbaug13"}],"F# A# D E D#":[{o:{}, x:"F#aug13"},{o:{useFlats:true}, x:"Gbaug13"}],"F# A# D F G# B D#":[{o:{}, x:"F#aug(maj13)"},{o:{useFlats:true}, x:"Gbaug(maj13)"}],"F# A# D F G# D#":[{o:{}, x:"F#aug(maj13)"},{o:{useFlats:true}, x:"Gbaug(maj13)"}],"F# A# D F B D#":[{o:{}, x:"F#aug(maj13)"},{o:{useFlats:true}, x:"Gbaug(maj13)"}],"F# A# D F D#":[{o:{}, x:"F#aug(maj13)"},{o:{useFlats:true}, x:"Gbaug(maj13)"}],"F# A# C# D#":[{o:{}, x:"F#6"},{o:{useFlats:true}, x:"Gb6"}],"F# A# D#":[{o:{}, x:"F#6(no5)"},{o:{useFlats:true}, x:"Gb6(no5)"}],"F# A# C D#":[{o:{}, x:"F#6(b5)"},{o:{useFlats:true}, x:"Gb6(b5)"}],"F# A# D D#":[{o:{}, x:"F#aug6"},{o:{useFlats:true}, x:"Gbaug6"}],"F# A C# D#":[{o:{}, x:"F#m6"},{o:{useFlats:true}, x:"Gbm6"}],"F# A D#":[{o:{}, x:"F#m6(no5)"},{o:{useFlats:true}, x:"Gbm6(no5)"}],"F# A D D#":[{o:{}, x:"F#m6(#5)"},{o:{useFlats:true}, x:"Gbm6(#5)"}],"F# A# C# D# G#":[{o:{}, x:"F#6/9"},{o:{useFlats:true}, x:"Gb6/9"}],"F# A C# D# G#":[{o:{}, x:"F#m6/9"},{o:{useFlats:true}, x:"Gbm6/9"}],"F# G# C#":[{o:{}, x:"F#sus2"},{o:{useFlats:true}, x:"Gbsus2"}],"F# B C#":[{o:{}, x:"F#sus4"},{o:{useFlats:true}, x:"Gbsus4"}],"F# G# B C#":[{o:{}, x:"F#sus2/4"},{o:{useFlats:true}, x:"Gbsus2/4"}],"F# D# C#":[{o:{}, x:"F#6sus"},{o:{useFlats:true}, x:"Gb6sus"}],"F# D# C# G#":[{o:{}, x:"F#6/9sus"},{o:{useFlats:true}, x:"Gb6/9sus"}],"F# D# C# B":[{o:{}, x:"F#6/11sus"},{o:{useFlats:true}, x:"Gb6/11sus"}],"F# D# C# G# B":[{o:{}, x:"F#6/9sus4"},{o:{useFlats:true}, x:"Gb6/9sus4"}],"F# D# G#":[{o:{}, x:"F#6/9sus(no5)"},{o:{useFlats:true}, x:"Gb6/9sus(no5)"}],"F# D# B":[{o:{}, x:"F#6/11sus(no5)"},{o:{useFlats:true}, x:"Gb6/11sus(no5)"}],"F# D# G# B":[{o:{}, x:"F#6/9sus4(no5)"},{o:{useFlats:true}, x:"Gb6/9sus4(no5)"}],"F# C# E":[{o:{}, x:"F#7sus"},{o:{useFlats:true}, x:"Gb7sus"}],"F# C# F":[{o:{}, x:"F#maj7sus"},{o:{useFlats:true}, x:"Gbmaj7sus"}],"F# C# E G#":[{o:{}, x:"F#9sus"},{o:{useFlats:true}, x:"Gb9sus"}],"F# C# F G#":[{o:{}, x:"F#maj9sus"},{o:{useFlats:true}, x:"Gbmaj9sus"}],"F# C# E G# B":[{o:{}, x:"F#11sus"},{o:{useFlats:true}, x:"Gb11sus"}],"F# C# E B":[{o:{}, x:"F#11sus"},{o:{useFlats:true}, x:"Gb11sus"}],"F# C# F G# B":[{o:{}, x:"F#maj11sus"},{o:{useFlats:true}, x:"Gbmaj11sus"}],"F# C# F B":[{o:{}, x:"F#maj11sus"},{o:{useFlats:true}, x:"Gbmaj11sus"}],"F# C# E G# B D#":[{o:{}, x:"F#13sus"},{o:{useFlats:true}, x:"Gb13sus"}],"F# C# E G# D#":[{o:{}, x:"F#13sus"},{o:{useFlats:true}, x:"Gb13sus"}],"F# C# E B D#":[{o:{}, x:"F#13sus"},{o:{useFlats:true}, x:"Gb13sus"}],"F# C# E D#":[{o:{}, x:"F#13sus"},{o:{useFlats:true}, x:"Gb13sus"}],"F# C# F G# B D#":[{o:{}, x:"F#maj13sus"},{o:{useFlats:true}, x:"Gbmaj13sus"}],"F# C# F G# D#":[{o:{}, x:"F#maj13sus"},{o:{useFlats:true}, x:"Gbmaj13sus"}],"F# C# F B D#":[{o:{}, x:"F#maj13sus"},{o:{useFlats:true}, x:"Gbmaj13sus"}],"F# C# F D#":[{o:{}, x:"F#maj13sus"},{o:{useFlats:true}, x:"Gbmaj13sus"}]};
+  
+  //short example of what this test matrix looks like:
+  /*
+  let testMatrix = {
+    'F# A# C#': [
+      {o: {}, x: 'F#'},
+      {o: {useFlats:true}, x: 'Gb'}
+    ],
+    'F# A C#': [
+      {o: {}, x: 'F#m'},
+      {o: {useFlats:true}, x: 'Gbm'}
+    ]
+  };
+  */
+  
+  let chords = Object.keys(testMatrix).sort();
+  for(let i = 0; i < chords.length; i++) {
+    let chord = chords[i];
+    let tests = testMatrix[chord];
+    for(let j = 0; j < tests.length; j++) {
+      let test = tests[j];
+      let expected = test.x;
+      let options = test.o;
+      let optionsJson = JSON.stringify(options);
+      Test.assert(expected, crd(chord).getName(r, options).name, `Chord("${chord}").getName(root=A#, options=${optionsJson})`);
+    }
+  }
+  
 });
 
