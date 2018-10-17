@@ -314,7 +314,7 @@ function Chord(notes) {
         verbose.push('two-note "chord": aug5');
         consumed[SHARP_FIFTH] = true;
         noteDetails.push({interval: `${options.sharpSymbol}5`, note: rootNote.transpose(SHARP_FIFTH)});
-        quality = 'aug';
+        quality = options.augSymbol;
         intervalName = '5';
         score += 10;
       }
@@ -360,7 +360,7 @@ function Chord(notes) {
           noteDetails.push({interval: `${options.sharpSymbol}5`, note: rootNote.transpose(SHARP_FIFTH)});
           consumed[SHARP_FIFTH] = true;
           score -= 3;
-          quality = 'aug';
+          quality = options.augSymbol;
           isAug = true;
         }
         else {
@@ -406,7 +406,7 @@ function Chord(notes) {
         }
         else {
           verbose.push('add9 chord - ninth chord with missing seventh')
-          added += (isAug ? '(add9)' : 'add9');
+          added += 'add9';
         }
       }
       else if(intervals[SHARP_NINTH] && !consumed[SHARP_NINTH]) {
