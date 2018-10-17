@@ -11,7 +11,7 @@ let ChordPlayer = {
     capo: 0,
     frets: [ null, null, null, null, null, null ],
     animating: false,
-    options: {useFlats: false}
+    options: {unicodeAccidentals: true, omitMajor: true}
   },
   
   init() {
@@ -97,16 +97,30 @@ let ChordPlayer = {
     });
     $(window).on('mouseup touchend touchcancel', function(e) {
       dragging = false;
-      //clearSelection(); //just in case...
     });
   },
   
   setUpOptions() {
-    $('#options #useFlats').on('change', function() {
-      ChordPlayer.state.options.useFlats = this.checked;
+    $('#options #showOptions').on('click', function(e) {
+      e.preventDefault();
+      $('#optionsOverlay').show();
+    });
+    $('#optionsModal #optionsDismiss').on('click', function(e) {
+      $('#optionsOverlay').hide();
+    });
+    $('#optionsModal .option input, #optionsModal .option select').on('change', function(e) {
+      ChordPlayer.state.options.useFlats = $('#useFlats')[0].checked;
+      ChordPlayer.state.options.unicodeAccidentals = $('#unicodeAccidentals')[0].checked;
+      ChordPlayer.state.options.majorSymbol = $('#majorSymbol').val();
+      ChordPlayer.state.options.omitMajor = $('#omitMajor')[0].checked;
+      ChordPlayer.state.options.minorSymbol = $('#minorSymbol').val();
+      ChordPlayer.state.options.omitMinor = $('#omitMinor')[0].checked;
+      ChordPlayer.state.options.augSymbol = $('#augSymbol').val();
+      ChordPlayer.state.options.dimSymbol = $('#dimSymbol').val();
+      ChordPlayer.state.options.unicodeHalfDiminished = ($('#unicodeHalfDiminished').val() === 'true');
       ChordPlayer.draw();
     });
-    $('#options #leftHanded').on('change', function() {
+    $('#leftHanded').on('change', function() {
       ChordPlayer.state.strings.reverse();
       ChordPlayer.state.frets.reverse();
       ChordPlayer.draw();
@@ -122,7 +136,7 @@ let ChordPlayer = {
       }
       ChordPlayer.state.strings = pitchesList.split(/ /).map(s => new Pitch(s));
       ChordPlayer.state.frets = ChordPlayer.state.strings.map(() => null);
-      if($('#options #leftHanded')[0].checked) {
+      if($('#leftHanded')[0].checked) {
         ChordPlayer.state.strings.reverse();
         ChordPlayer.state.frets.reverse();
       }

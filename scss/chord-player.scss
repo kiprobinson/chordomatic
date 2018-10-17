@@ -269,3 +269,41 @@ a, a:visited {
   display: none;
 }
 
+#optionsOverlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1000;
+  
+  #optionsModal {
+    width: $guitarAreaWidth;
+    margin: auto;
+    margin-top: 50px;
+    background-color: #ddd;
+    overflow: hidden;
+    border-radius: 5px;
+    
+    .header, .body, .footer {
+      padding: 10px;
+    }
+    .header {
+      font-weight: bold;
+      background-color: orange;
+    }
+    .body {
+      color: #222;
+      
+      .option {
+        margin-bottom: 5px;
+      }
+    }
+    .footer {
+      text-align: right;
+      padding-top: 0;
+    }
+  }
+}

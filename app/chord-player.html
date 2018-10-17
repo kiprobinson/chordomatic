@@ -40,9 +40,7 @@
   <div id="title">Chord-o-matic Chord Constructor</div>
   
   <div id="options">
-    Options: <input type="checkbox" id="useFlats" /> <label for="useFlats">Flats</label>
-    | <input type="checkbox" id="leftHanded" /> <label for="leftHanded">Left-Handed</label>
-    <br/>
+    <a href="#" id="showOptions">Options...</a><br/>
     Instrument/Tuning:
     <select id="instrument">
       <option value="E2 A2 D3 G3 B3 E4" selected>Guitar - Standard</option>
@@ -90,6 +88,73 @@
   <div id="chords-true"></div>
   
   <div id="copyright">&copy; 2018 Kip Robinson. Details at <a href="https://github.com/kiprobinson/chordomatic">GitHub</a>.</div>
+</div>
+
+<div id="optionsOverlay">
+  <div id="optionsModal">
+    <div class="header">Options</div>
+    <div class="body">
+      <div class="option">
+        <input type="checkbox" id="leftHanded" />
+        <label for="leftHanded">Left-Handed</label>
+      </div>
+      <div class="option">
+        <input type="checkbox" id="useFlats" />
+        <label for="useFlats">Prefer flats in chord names (i.e. D&#x266D; instead of C&#x266F;)</label>
+      </div>
+      <div class="option">
+        <input type="checkbox" id="unicodeAccidentals" checked />
+        <label for="unicodeAccidentals">Use unicode accidentals (i.e. &#x266D;/&#x266F; instead of b/#)</label>
+      </div>
+      <div class="option">
+        <select id="majorSymbol">
+          <option value="maj" selected>maj</option>
+          <option value="M">M</option>
+        </select>
+        Symbol for major chord.
+      </div>
+      <div class="option">
+        <input type="checkbox" id="omitMajor" />
+        <label for="omitMajor">Omit symbol for major chord when possible.</label>
+      </div>
+      <div class="option">
+        <select id="minorSymbol">
+          <option value="m" selected>m</option>
+          <option value="min">min</option>
+          <option value="-">-</option>
+        </select>
+        Symbol for minor chord.
+      </div>
+      <div class="option">
+        <input type="checkbox" id="omitMinor" />
+        <label for="omitMinor">Use lower-case root name instead of minor symbol.</label>
+      </div>
+      <div class="option">
+        <select id="augSymbol">
+          <option value="aug" selected>aug</option>
+          <option value="+">+</option>
+        </select>
+        Symbol for augmented chord.
+      </div>
+      <div class="option">
+        <select id="dimSymbol">
+          <option value="dim" selected>dim</option>
+          <option value="o">&#x1D52;</option>
+        </select>
+        Symbol for diminished chord.
+      </div>
+      <div class="option">
+        <select id="unicodeHalfDiminished">
+          <option value="false" selected>m7(&#x266D;5)</option>
+          <option value="true">&#x00F8;</option>
+        </select>
+        Symbol for half-diminished chord.
+      </div>
+    </div>
+    <div class="footer">
+      <button id="optionsDismiss">OK</button>
+    </div>
+  </div>
 </div>
 
 <div id="audio"></div>
