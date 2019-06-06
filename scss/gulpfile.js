@@ -5,40 +5,37 @@ NOTE TO SELF:
 To set this up again in the future, open command prompt in this dir and do:
 
 npm install
-npm install gulp -g
 
-Run by executing command "gulp" from any directory.
+Run by executing command "npm run build".
+
+Watch for changes with "npm run watch".
 
 */
 
-var gulp = require('gulp');
-var sass = require('gulp-sass');
+let gulp = require('gulp');
+let sass = require('gulp-sass');
 
-var onError = function (err) {
+let onError = function (err) {
   console.log('\x1b[31m%s\x1b[0m: ', err);
   this.emit('end');
 };
 
 
-var srcCSS = ['chord-player.scss'];
-var destCSS = '../app/';
+let srcCSS = ['chord-player.scss'];
+let destCSS = '../app/';
 
 
-gulp.task('default', ['build']);
-gulp.task('build', ['css']);
-gulp.task('watch', ['watchCSS']);
-
-gulp.task('watchJS',function() {
-  gulp.watch(srcJS,['js']);
+gulp.task('css', function(done) {
+  return gulp.src(srcCSS)
+    .pipe(sass({outputStyle: 'compressed'}).on('error', onError))
+    .pipe(gulp.dest(destCSS));
 });
 
 gulp.task('watchCSS',function() {
-  gulp.watch(srcCSS,['css']);
+  return gulp.watch(srcCSS, gulp.series('css'));
 });
 
-gulp.task('css', function() {
-  gulp.src(srcCSS)
-    .pipe(sass({outputStyle: 'compressed'}).on('error', onError))
-    .pipe(gulp.dest(destCSS));
-  console.log('\x1b[32m%s\x1b[0m: ', 'CSS processed.');
-});
+
+gulp.task('watch', gulp.series('watchCSS'));
+gulp.task('build', gulp.series('css'));
+gulp.task('default', gulp.series('build'));
