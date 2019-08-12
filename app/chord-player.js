@@ -11,7 +11,7 @@ let ChordPlayer = {
     capo: 0,
     frets: [ null, null, null, null, null, null ],
     animating: false,
-    options: {unicodeAccidentals: true, omitMajor: true}
+    options: {unicodeAccidentals: true, omitMajor: true, useHtml: true}
   },
   
   init() {

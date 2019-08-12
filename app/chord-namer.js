@@ -402,7 +402,7 @@ function Chord(notes) {
           verbose.push('6/9 chord - found sixth and ninth, but no seventh');
           noteDetails.push({interval: '6', note: rootNote.transpose(SIXTH)});
           consumed[SIXTH] = true;
-          intervalName = '6/9';
+          intervalName = (options.useHtml ? '<span class="supsub"><span>6</span><span>9</span></span>' : '6/9');
         }
         else {
           verbose.push('add9 chord - ninth chord with missing seventh')
@@ -580,7 +580,7 @@ function Chord(notes) {
           verbose.push(`${options.minorSymbol}6/9 chord - found sixth and ninth, but no seventh`);
           noteDetails.push({interval: '6', note: rootNote.transpose(SIXTH)});
           consumed[SIXTH] = true;
-          intervalName = '6/9';
+          intervalName = (options.useHtml ? '<span class="supsub"><span>6</span><span>9</span></span>' : '6/9');
         }
         else {
           verbose.push(`${options.minorSymbol}(add9) chord - ninth chord with missing seventh`)
@@ -742,14 +742,14 @@ function Chord(notes) {
           verbose.push('found ninth - this is a 6/9sus chord');
           noteDetails.push({interval: '9', note: rootNote.transpose(NINTH)});
           consumed[NINTH] = true;
-          intervalName = '6/9';
+          intervalName = (options.useHtml ? '<span class="supsub"><span>6</span><span>9</span></span>' : '6/9');
           score -= 3;
         }
         else if(intervals[ELEVENTH] && !consumed[ELEVENTH]) {
           verbose.push('found eleventh - this is a 6/11sus chord');
           noteDetails.push({interval: '11', note: rootNote.transpose(ELEVENTH)});
           consumed[ELEVENTH] = true;
-          intervalName = '6/11';
+          intervalName = (options.useHtml ? '<span class="supsub"><span>6</span><span>11</span></span>' : '6/11');
           score -= 4;
         }
       }
@@ -760,7 +760,7 @@ function Chord(notes) {
         noteDetails.push({interval: '4', note: rootNote.transpose(FOURTH)});
         consumed[SECOND] = true;
         consumed[FOURTH] = true;
-        quality += '2/4';
+        quality += (options.useHtml ? '<span class="supsub"><span>2</span><span>4</span></span>' : '2/4');
         score += 5;
       }
       else if(intervals[SECOND] && !consumed[SECOND]) {
@@ -871,6 +871,10 @@ function Chord(notes) {
  *      will be set in the options struct.
  *    Default: false
  *  
+ *  useHtml:
+ *    Boolean value. If true, chord name will utilize html in some cases (for example, for 6/9 chord)
+ *    Default: false
+ *  
  */
 Chord.standardizeOptions = function(options) {
   if('object' !== typeof options || options === null || options === undefined)
@@ -896,6 +900,8 @@ Chord.standardizeOptions = function(options) {
     options.unicodeAccidentals = false;
   if(options.unicodeHalfDiminished !== true)
     options.unicodeHalfDiminished = false;
+  if(options.useHtml !== true)
+    options.useHtml = false;
   
   options.sharpSymbol = options.unicodeAccidentals ? '\u266F' : '#';
   options.flatSymbol  = options.unicodeAccidentals ? '\u266D' : 'b';

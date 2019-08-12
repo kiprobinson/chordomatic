@@ -28,6 +28,16 @@ body {
   color: white;
 }
 
+.supsub {
+  display: inline-block;
+  font-size: 70%;
+  vertical-align: sub;
+  
+  >span {
+    display: block;
+  }
+}
+
 @media (max-width: $mobileBreak) {
   body {
     font-size: 1.75em;
