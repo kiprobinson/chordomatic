@@ -5,6 +5,7 @@ const AUDIO_MAP = {"F0":[{"fret":0,"file":"F0/00"}],"F#0":[{"fret":1,"file":"F0/
 
 //state-  string tunings, net pitch alter, selected frets
 let ChordPlayer = {
+  
   state: {
     strings: 'E2 A2 D3 G3 B3 E4'.split(/ /).map(s => new Pitch(s)),
     transpose: 0,
@@ -17,13 +18,9 @@ let ChordPlayer = {
   init() {
     let $guitar = $('#guitar');
     $guitar.on('click', '.note', ChordPlayer.handleNoteClick);
+    ChordPlayer.loadState();
     ChordPlayer.setUpPick();
     ChordPlayer.setUpOptions();
-    
-    $('#test').on('click', function() {
-      //debugger;
-      ChordPlayer.playChord();
-    });
     
     ChordPlayer.draw();
     
@@ -118,11 +115,13 @@ let ChordPlayer = {
       ChordPlayer.state.options.augSymbol = $('#augSymbol').val();
       ChordPlayer.state.options.dimSymbol = $('#dimSymbol').val();
       ChordPlayer.state.options.unicodeHalfDiminished = ($('#unicodeHalfDiminished').val() === 'true');
+      ChordPlayer.saveState();
       ChordPlayer.draw();
     });
     $('#leftHanded').on('change', function() {
       ChordPlayer.state.strings.reverse();
       ChordPlayer.state.frets.reverse();
+      ChordPlayer.saveState();
       ChordPlayer.draw();
     });
     $('#options #instrument').on('change', function() {
@@ -140,20 +139,77 @@ let ChordPlayer = {
         ChordPlayer.state.strings.reverse();
         ChordPlayer.state.frets.reverse();
       }
+      ChordPlayer.saveState();
       ChordPlayer.draw();
     });
     $('#options #tuning').on('change', function() {
       ChordPlayer.state.transpose = Number($(this).val());
+      ChordPlayer.saveState();
       ChordPlayer.draw();
     });
     $('#options #capo').on('change', function() {
-      let newCapo = Number($(this).val())
-      let diff = newCapo - ChordPlayer.state.capo;
+      const newCapo = Number($(this).val())
+      const diff = newCapo - ChordPlayer.state.capo;
       ChordPlayer.state.capo = newCapo;
       ChordPlayer.state.frets = ChordPlayer.state.frets.map(n => n === null ? null : Math.max(ChordPlayer.state.capo, Math.min(12, n + diff)));
+      ChordPlayer.saveState();
       ChordPlayer.draw();
     });
+  },
+  
+  loadState() {
+    let _state = null;
+    try { _state = JSON.parse(localStorage.getItem('state')) }
+    catch (e) { console.error(e) }
     
+    if(_state === null)
+      return;
+    
+    Object.keys(ChordPlayer.state).forEach(function(key) {
+      if(key === 'strings')
+        ChordPlayer.state.strings = _state.strings.split(/ /).map(s => new Pitch(s));
+      else if (key === 'options')
+        ChordPlayer.state.options = Object.assign({}, _state.options);
+      else if (key === 'frets')
+        ChordPlayer.state.frets = _state.frets.slice();
+      else if (key !== 'animating')
+        ChordPlayer.state[key] = _state[key];
+    });
+    
+    //update UI components
+    $('#options #tuning').val(ChordPlayer.state.transpose);
+    $('#options #capo').val(ChordPlayer.state.capo);
+    $('#useFlats')[0].checked = ChordPlayer.state.options.useFlats;
+    $('#unicodeAccidentals')[0].checked = ChordPlayer.state.options.unicodeAccidentals;
+    $('#majorSymbol').val(ChordPlayer.state.options.majorSymbol);
+    $('#omitMajor')[0].checked = ChordPlayer.state.options.omitMajor;
+    $('#minorSymbol').val(ChordPlayer.state.options.minorSymbol);
+    $('#omitMinor')[0].checked = ChordPlayer.state.options.omitMinor;
+    $('#augSymbol').val(ChordPlayer.state.options.augSymbol);
+    $('#dimSymbol').val(ChordPlayer.state.options.dimSymbol);
+    $('#unicodeHalfDiminished').val(ChordPlayer.state.options.unicodeHalfDiminished.toString());
+    
+    //for setting instrument val, try to set it to the selected pitch list. if it's not found (i.e. val is null), set it to custom
+    $('#options #instrument').val(_state.strings);
+    if($('#options #instrument').val() === null)
+      $('#options #instrument').val('CUSTOM');
+  },
+  
+  saveState() {
+    let stateCopy = {};
+    Object.keys(ChordPlayer.state).forEach(function(key) {
+      if(key === 'strings')
+        stateCopy.strings = ChordPlayer.state.strings.map(p => p.toString()).join(' ');
+      else if (key === 'options')
+        stateCopy.options = Object.assign({}, ChordPlayer.state.options);
+      else if (key === 'frets')
+        stateCopy.frets = ChordPlayer.state.frets.slice();
+      else if (key !== 'animating')
+        stateCopy[key] = ChordPlayer.state[key];
+    });
+    
+    try { localStorage.setItem('state', JSON.stringify(stateCopy)); }
+    catch (e) { console.error(e) };
   },
   
   draw() {
@@ -275,6 +331,8 @@ let ChordPlayer = {
     let staticStringHeight = ChordPlayer.getStaticStringHeight(stringId);
     $guitar.find(`#strings .string.static.string-${stringId}`).css({height: `${staticStringHeight}%`});
     $guitar.find(`#strings .string.active.string-${stringId}`).css({top: `${staticStringHeight}%`, height: `${100 - staticStringHeight}%`});
+    
+    ChordPlayer.saveState();
     ChordPlayer.pluckString(stringId);
   },
   
