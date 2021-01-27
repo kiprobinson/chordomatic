@@ -39,7 +39,7 @@ function Note(note) {
    * @param options See standardizeOptions() for details on values for this parameter.
    */
   this.getName = function(options={}) {
-    Chord.standardizeOptions(options);
+    options = Chord.standardizeOptions(options);
     
     let name = (options.useFlats ? NAMES_FLAT[this.id] : NAMES_SHARP[this.id]);
     if(name.length > 1 && options.unicodeAccidentals)
@@ -196,7 +196,7 @@ function Chord(notes) {
    *  See standardizeOptions() for details on values for options parameter.
    */
   this.getName = function(rootNote, options={}, bassNote) {
-    Chord.standardizeOptions(options);
+    options = Chord.standardizeOptions(options);
     
     let rootName = rootNote.getName(options);
     let quality = '';
@@ -249,34 +249,35 @@ function Chord(notes) {
     const INTERVAL_NAMES = [ 'R', `${options.flatSymbol}2`, '2', 'm3', '3', '4', `${options.flatSymbol}5`, '5', `${options.sharpSymbol}5`, '6', 'dom7', 'maj7' ];
     
     if(!intervals[ROOT]) {
-      verbose.push('root is not present. pretending like it is.')
-      intervals[ROOT] = true;
       score -= 20;
+      verbose.push('-20 root is not present. pretending like it is.')
+      intervals[ROOT] = true;
     }
     consumed[ROOT] = true;
     noteDetails.push({interval: 'R', note: rootNote});
     
     if(!intervals[BASS]) {
-      verbose.push('bass note is not present. pretending like it is.');
+      score -= 20;
+      verbose.push('-20 bass note is not present. pretending like it is.');
       intervals[BASS] = true;
       //note: not consuming the bass note yet
-      score -= 20;
     }
     
     if(!bassNote.equals(rootNote)) {
-      verbose.push('bass note is *NOT* the root note.');
-      bass = `/${bassNote.getName(options)}`;
       score -= 10;
+      verbose.push('-10 bass note is *NOT* the root note.');
+      bass = `/${bassNote.getName(options)}`;
     }
     
     let noteCount = intervals.reduce((acc,val) => acc + (val ? 1 : 0));
     
     if(noteCount == 1) {
-      verbose.push('one-note "chord". name is just the root');
+      verbose.push('+0  one-note "chord". name is just the root');
     }
     else if(noteCount == 2) {
       if(intervals[MIN_THIRD]) {
-        verbose.push('two-note "chord": minor chord with missing fifth');
+        score += 18;
+        verbose.push('+18 two-note "chord": minor chord with missing fifth');
         if(options.omitMinor)
           lowerCaseRoot = true;
         else
@@ -284,39 +285,38 @@ function Chord(notes) {
         consumed[MIN_THIRD] = true;
         noteDetails.push({interval: 'm3', note: rootNote.transpose(MIN_THIRD)});
         omissions += 'no5';
-        score += 18;
       }
       else if(intervals[MAJ_THIRD]) {
-        verbose.push('two-note "chord": major chord with missing fifth');
+        score += 20;
+        verbose.push('+20 two-note "chord": major chord with missing fifth');
         consumed[MAJ_THIRD] = true;
         noteDetails.push({interval: '3', note: rootNote.transpose(MAJ_THIRD)});
         omissions += 'no5';
         if(!options.omitMajor)
           quality = options.majorSymbol;
-        score += 20;
       }
       else if(intervals[FLAT_FIFTH]) {
-        verbose.push(`two-note "chord": ${options.dimSymbol}5`);
+        score += 10;
+        verbose.push(`+10 two-note "chord": ${options.dimSymbol}5`);
         consumed[FLAT_FIFTH] = true;
         noteDetails.push({interval: `${options.flatSymbol}5`, note: rootNote.transpose(FLAT_FIFTH)});
         quality = options.dimSymbol;
         intervalName = '5';
-        score += 10;
       }
       else if(intervals[FIFTH]) {
-        verbose.push('power chord: root and fifth');
+        score += 30;
+        verbose.push('+30 power chord: root and fifth');
         consumed[FIFTH] = true;
         noteDetails.push({interval: '5', note: rootNote.transpose(FIFTH)});
         intervalName = '5';
-        score += 30;
       }
       else if(intervals[SHARP_FIFTH]) {
-        verbose.push('two-note "chord": aug5');
+        score += 10;
+        verbose.push('+10 two-note "chord": aug5');
         consumed[SHARP_FIFTH] = true;
         noteDetails.push({interval: `${options.sharpSymbol}5`, note: rootNote.transpose(SHARP_FIFTH)});
         quality = options.augSymbol;
         intervalName = '5';
-        score += 10;
       }
       else {
         //if it's not one of of the two-note chords with a special name, just use a name like "C~F".
@@ -324,7 +324,7 @@ function Chord(notes) {
         for(let i = 0; i < INTERVAL_NAMES.length; i++) {
           if(intervals[i] && !consumed[i]) {
             let otherNote = rootNote.transpose(i);
-            verbose.push('found two-note "chord" with no recognized name. Using non-standard nomenclature "root~other"');
+            verbose.push('+0  found two-note "chord" with no recognized name. Using non-standard nomenclature "root~other"');
             noteDetails.push({interval: INTERVAL_NAMES[i], note: otherNote});
             consumed[i] = true;
             quality = `~${otherNote.getName(options)}`;
@@ -333,131 +333,131 @@ function Chord(notes) {
       }
     }
     else if(intervals[MAJ_THIRD]) {
-      verbose.push('found major third. this is a major chord');
+      score += 30;
+      verbose.push('+30 found major third. this is a major chord');
       noteDetails.push({interval: '3', note: rootNote.transpose(MAJ_THIRD)});
       consumed[MAJ_THIRD] = true;
-      score += 30;
       if(!options.omitMajor)
         quality = options.majorSymbol;
       let isAug = false;
       
       if(intervals[FIFTH]) {
-        verbose.push('found fifth');
+        score += 10;
+        verbose.push('+10 found fifth');
         noteDetails.push({interval: '5', note: rootNote.transpose(FIFTH)});
         consumed[FIFTH] = true;
-        score += 10;
       }
       else {
         if(intervals[FLAT_FIFTH]) {
-          verbose.push('found flat fifth.');
+          score -= 3;
+          verbose.push('-3  found flat fifth.');
           noteDetails.push({interval: `${options.flatSymbol}5`, note: rootNote.transpose(FLAT_FIFTH)});
           consumed[FLAT_FIFTH] = true;
-          score -= 3;
           altFifth = `${options.flatSymbol}5`;
         }
         else if(intervals[SHARP_FIFTH]) {
-          verbose.push('found sharp fifth. this is augmented chord');
+          score -= 3;
+          verbose.push('-3  found sharp fifth. this is augmented chord');
           noteDetails.push({interval: `${options.sharpSymbol}5`, note: rootNote.transpose(SHARP_FIFTH)});
           consumed[SHARP_FIFTH] = true;
-          score -= 3;
           quality = options.augSymbol;
           isAug = true;
         }
         else {
-          verbose.push('missing fifth');
-          omissions += 'no5';
           score -= 10;
+          verbose.push('-10 missing fifth');
+          omissions += 'no5';
         }
       }
       
       if(intervals[DOM_SEVENTH]) {
-        verbose.push('found dominant seventh');
+        score -= 5;
+        verbose.push('-5  found dominant seventh');
         noteDetails.push({interval: '7', note: rootNote.transpose(DOM_SEVENTH)});
         consumed[DOM_SEVENTH] = true;
         intervalName = '7';
-        score -= 5;
       }
       else if(intervals[MAJ_SEVENTH]) {
-        verbose.push('found major seventh');
+        score -= 5;
+        verbose.push('-5  found major seventh');
         noteDetails.push({interval: `${options.majorSymbol}7`, note: rootNote.transpose(MAJ_SEVENTH)});
         consumed[MAJ_SEVENTH] = true;
         intervalName = `${options.majorSymbol}7`;
-        score -= 5;
       }
       
       if(intervals[NINTH]) {
-        verbose.push('found ninth (second)');
+        score -= 6;
+        verbose.push('-6  found ninth (second)');
         noteDetails.push({interval: '9', note: rootNote.transpose(NINTH)});
         consumed[NINTH] = true;
-        score -= 6;
         if(intervals[DOM_SEVENTH]) {
-          verbose.push('9 chord - 7 chord plus ninth');
+          verbose.push('+0  9 chord - 7 chord plus ninth');
           intervalName = '9';
         }
         else if(intervals[MAJ_SEVENTH]) {
-          verbose.push(`${options.majorSymbol}9 chord - ${options.majorSymbol}7 chord plus ninth`);
+          verbose.push(`+0  ${options.majorSymbol}9 chord - ${options.majorSymbol}7 chord plus ninth`);
           intervalName = `${options.majorSymbol}9`;
         }
         else if (intervals[SIXTH]) {
-          verbose.push('6/9 chord - found sixth and ninth, but no seventh');
+          verbose.push('+0  6/9 chord - found sixth and ninth, but no seventh');
           noteDetails.push({interval: '6', note: rootNote.transpose(SIXTH)});
           consumed[SIXTH] = true;
           intervalName = (options.useHtml ? '<span class="supsub"><span>6</span><span>9</span></span>' : '6/9');
         }
         else {
-          verbose.push('add9 chord - ninth chord with missing seventh')
+          verbose.push('+0  add9 chord - ninth chord with missing seventh')
           added += 'add9';
         }
       }
       else if(intervals[SHARP_NINTH] && !consumed[SHARP_NINTH]) {
         if(intervals[DOM_SEVENTH]) {
-          verbose.push(`7(${options.sharpSymbol}9) chord - 7 chord plus sharp ninth`);
+          score -= 9;
+          verbose.push(`-9  7(${options.sharpSymbol}9) chord - 7 chord plus sharp ninth`);
           noteDetails.push({interval: `${options.sharpSymbol}9`, note: rootNote.transpose(SHARP_NINTH)});
           intervalName = `7(${options.sharpSymbol}9)`;
           consumed[SHARP_NINTH] = true;
-          score -= 9;
           intervalName = `7(${options.sharpSymbol}9)`;
         }
         else if(intervals[MAJ_SEVENTH]) {
-          verbose.push(`${options.majorSymbol}7(${options.sharpSymbol}9) chord - ${options.majorSymbol}7 chord plus sharp ninth`);
+          score -= 9;
+          verbose.push(`-9  ${options.majorSymbol}7(${options.sharpSymbol}9) chord - ${options.majorSymbol}7 chord plus sharp ninth`);
           noteDetails.push({interval: `${options.sharpSymbol}9`, note: rootNote.transpose(SHARP_NINTH)});
           intervalName = `${options.majorSymbol}7(${options.sharpSymbol}9)`;
           consumed[SHARP_NINTH] = true;
-          score -= 9;
           intervalName = `${options.majorSymbol}7(${options.sharpSymbol}9)`;
         }
       }
       
       if(intervals[ELEVENTH]) {
-        verbose.push('found eleventh (fourth)');
+        score -= 7;
+        verbose.push('-7  found eleventh (fourth)');
         noteDetails.push({interval: '11', note: rootNote.transpose(ELEVENTH)});
         consumed[ELEVENTH] = true;
-        score -= 7;
         if(intervals[DOM_SEVENTH]) {
-          verbose.push('11 chord - 7 chord plus eleventh');
+          verbose.push('-11 11 chord - 7 chord plus eleventh');
           intervalName = '11';
         }
         else if(intervals[MAJ_SEVENTH]) {
-          verbose.push(`${options.majorSymbol}11 chord - ${options.majorSymbol}7 chord plus eleventh`);
+          verbose.push(`+0  ${options.majorSymbol}11 chord - ${options.majorSymbol}7 chord plus eleventh`);
           intervalName = `${options.majorSymbol}11`;
         }
         else {
-          verbose.push('add11 chord - eleventh chord with missing seventh')
+          verbose.push('+0  add11 chord - eleventh chord with missing seventh')
           added = 'add11';
         }
       }
       
       if(intervals[THIRTEENTH] && (intervals[DOM_SEVENTH] || intervals[MAJ_SEVENTH])) {
-        verbose.push('found thirteenth (sixth)');
+        score -= 8;
+        verbose.push('-8  found thirteenth (sixth)');
         noteDetails.push({interval: '13', note: rootNote.transpose(THIRTEENTH)});
         consumed[THIRTEENTH] = true;
-        score -= 8;
         if(intervals[DOM_SEVENTH]) {
-          verbose.push('13 chord - 7 chord plus thirteenth');
+          verbose.push('+0  13 chord - 7 chord plus thirteenth');
           intervalName = '13';
         }
         else if(intervals[MAJ_SEVENTH]) {
-          verbose.push(`${options.majorSymbol}13 chord - ${options.majorSymbol}7 chord plus thirteenth`);
+          verbose.push(`+0  ${options.majorSymbol}13 chord - ${options.majorSymbol}7 chord plus thirteenth`);
           intervalName = `${options.majorSymbol}13`;
         }
         //note: no "add13" chord. if seventh is missing, this is just a "6" chord that will be handled later.
@@ -465,72 +465,72 @@ function Chord(notes) {
       
       if(intervals[SIXTH] && !consumed[SIXTH]) {
         //we have a sixth that wasn't already identified as a thirteenth
-        verbose.push('found sixth');
+        score -= 9;
+        verbose.push('-9  found sixth');
         noteDetails.push({interval: '6', note: rootNote.transpose(SIXTH)});
         consumed[SIXTH] = true;
         intervalName = '6';
-        score -= 9;
       }
       
       if(!options.omitMajor && quality === options.majorSymbol && (intervalName !== '' || added !== ''))
         quality = '';
     }
     else if(intervals[MIN_THIRD]) {
-      verbose.push('found minor third. this is a minor chord');
+      score += 28;
+      verbose.push('+28 found minor third. this is a minor chord');
       noteDetails.push({interval: 'm3', note: rootNote.transpose(MIN_THIRD)});
       if(options.omitMinor)
         lowerCaseRoot = true;
       else
         quality = options.minorSymbol;
       consumed[MIN_THIRD] = true;
-      score += 28;
       let isDim = false;
       
       if(intervals[FIFTH]) {
-        verbose.push('found fifth');
+        score += 10;
+        verbose.push('+10 found fifth');
         noteDetails.push({interval: '5', note: rootNote.transpose(FIFTH)});
         consumed[FIFTH] = true;
-        score += 10;
       }
       else {
         if(intervals[FLAT_FIFTH]) {
-          verbose.push('found flat fifth. this is diminshed chord');
+          score -= 3;
+          verbose.push('-3  found flat fifth. this is diminshed chord');
           noteDetails.push({interval: `${options.flatSymbol}5`, note: rootNote.transpose(FLAT_FIFTH)});
           consumed[FLAT_FIFTH] = true;
-          score -= 3;
           quality = options.dimSymbol;
           if(lowerCaseRoot)
             lowerCaseRoot = false;
           isDim = true;
         }
         else if(intervals[SHARP_FIFTH]) {
-          verbose.push('found sharp fifth.');
+          score -= 3;
+          verbose.push('-3  found sharp fifth.');
           noteDetails.push({interval: `${options.sharpSymbol}5`, note: rootNote.transpose(SHARP_FIFTH)});
           consumed[SHARP_FIFTH] = true;
-          score -= 3;
           altFifth += `${options.sharpSymbol}5`;
         }
         else {
-          verbose.push('missing fifth');
-          omissions += 'no5';
           score -= 10;
+          verbose.push('-10 missing fifth');
+          omissions += 'no5';
         }
       }
       
       if(intervals[DOM_SEVENTH]) {
-        verbose.push('found dominant seventh');
+        score -= 5;
+        verbose.push('-5  found dominant seventh');
         noteDetails.push({interval: '7', note: rootNote.transpose(DOM_SEVENTH)});
         consumed[DOM_SEVENTH] = true;
         intervalName = '7';
-        score -= 5;
         if(isDim) {
           if(options.halfDimSymbol) {
-            verbose.push(`flat fifth and dominant seventh - using option to call it ${options.halfDimSymbol}`);
+            verbose.push(`+0  flat fifth and dominant seventh - using option to call it ${options.halfDimSymbol}`);
             quality = options.halfDimSymbol;
             intervalName = '';
           }
           else {
-            verbose.push(`flat fifth and dominant seventh - this is called ${options.minorSymbol}7${options.flatSymbol}5, not ${options.dimSymbol}7`);
+            verbose.push(`+0  flat fifth and dominant seventh - this is called ${options.minorSymbol}7${options.flatSymbol}5, not ${options.dimSymbol}7`);
             if(options.omitMinor) {
               lowerCaseRoot = true;
               quality = '';
@@ -545,83 +545,83 @@ function Chord(notes) {
         }
       }
       else if(intervals[MAJ_SEVENTH]) {
-        verbose.push('found major seventh');
+        score -= 5;
+        verbose.push('-5  found major seventh');
         noteDetails.push({interval: `${options.majorSymbol}7`, note: rootNote.transpose(MAJ_SEVENTH)});
         consumed[MAJ_SEVENTH] = true;
         intervalName = `${options.majorSymbol}7`;
-        score -= 5;
       }
       else if(isDim && intervals[DOUBLE_FLAT_SEVENTH]) {
-        verbose.push(`diminished chord with double-flat seventh - ${options.dimSymbol}7 chord`);
+        score -= 5;
+        verbose.push(`-5  diminished chord with double-flat seventh - ${options.dimSymbol}7 chord`);
         noteDetails.push({interval: `${options.flatSymbol}${options.flatSymbol}7`, note: rootNote.transpose(SIXTH)});
         consumed[SIXTH] = true;
         intervalName = '7';
-        score -= 5;
       }
       
       if(intervals[NINTH]) {
-        verbose.push('found ninth (second)');
+        score -= 6;
+        verbose.push('-6  found ninth (second)');
         noteDetails.push({interval: '9', note: rootNote.transpose(NINTH)});
         consumed[NINTH] = true;
-        score -= 6;
         if(intervals[DOM_SEVENTH]) {
-          verbose.push(`${options.minorSymbol}9 chord - ${options.minorSymbol}7 chord plus ninth`);
+          verbose.push(`+0  ${options.minorSymbol}9 chord - ${options.minorSymbol}7 chord plus ninth`);
           intervalName = '9';
         }
         else if(intervals[MAJ_SEVENTH]) {
-          verbose.push(`${options.minorSymbol}(${options.majorSymbol}9) chord - ${options.minorSymbol}(${options.majorSymbol}7) chord plus ninth`);
+          verbose.push(`+0  ${options.minorSymbol}(${options.majorSymbol}9) chord - ${options.minorSymbol}(${options.majorSymbol}7) chord plus ninth`);
           intervalName = `${options.majorSymbol}9`;
         }
         else if(isDim && intervals[DOUBLE_FLAT_SEVENTH]) {
-          verbose.push(`${options.dimSymbol}9 chord - ${options.dimSymbol}7 chord plus ninth`);
+          verbose.push(`+0  ${options.dimSymbol}9 chord - ${options.dimSymbol}7 chord plus ninth`);
           intervalName = '9';
         }
         else if (intervals[SIXTH] && !isDim) {
-          verbose.push(`${options.minorSymbol}6/9 chord - found sixth and ninth, but no seventh`);
+          verbose.push(`+0  ${options.minorSymbol}6/9 chord - found sixth and ninth, but no seventh`);
           noteDetails.push({interval: '6', note: rootNote.transpose(SIXTH)});
           consumed[SIXTH] = true;
           intervalName = (options.useHtml ? '<span class="supsub"><span>6</span><span>9</span></span>' : '6/9');
         }
         else {
-          verbose.push(`${options.minorSymbol}(add9) chord - ninth chord with missing seventh`)
+          verbose.push(`+0  ${options.minorSymbol}(add9) chord - ninth chord with missing seventh`)
           added += 'add9';
         }
       }
       
       if(intervals[ELEVENTH]) {
-        verbose.push('found eleventh (fourth)');
+        score -= 7;
+        verbose.push('-7  found eleventh (fourth)');
         noteDetails.push({interval: '11', note: rootNote.transpose(ELEVENTH)});
         consumed[ELEVENTH] = true;
-        score -= 7;
         if(intervals[DOM_SEVENTH]) {
-          verbose.push(`${options.minorSymbol}11 chord - ${options.minorSymbol}7 chord plus eleventh`);
+          verbose.push(`+0  ${options.minorSymbol}11 chord - ${options.minorSymbol}7 chord plus eleventh`);
           intervalName = '11';
         }
         else if(intervals[MAJ_SEVENTH]) {
-          verbose.push(`${options.minorSymbol}(${options.majorSymbol}11) chord - ${options.minorSymbol}(${options.majorSymbol}7) chord plus eleventh`);
+          verbose.push(`+0  ${options.minorSymbol}(${options.majorSymbol}11) chord - ${options.minorSymbol}(${options.majorSymbol}7) chord plus eleventh`);
           intervalName = `${options.majorSymbol}11`;
         }
         else if(isDim && intervals[DOUBLE_FLAT_SEVENTH]) {
-          verbose.push(`${options.dimSymbol}11 chord - ${options.dimSymbol}7 chord plus eleventh`);
+          verbose.push(`+0  ${options.dimSymbol}11 chord - ${options.dimSymbol}7 chord plus eleventh`);
           intervalName = '11';
         }
         else {
-          verbose.push(`${options.minorSymbol}(add11) chord - eleventh chord with missing seventh`)
+          verbose.push(`+0  ${options.minorSymbol}(add11) chord - eleventh chord with missing seventh`)
           added += 'add11';
         }
       }
       
       if(intervals[THIRTEENTH] && (intervals[DOM_SEVENTH] || intervals[MAJ_SEVENTH])) {
-        verbose.push('found thirteenth (sixth)');
+        score -= 8;
+        verbose.push('-8  found thirteenth (sixth)');
         noteDetails.push({interval: '13', note: rootNote.transpose(THIRTEENTH)});
         consumed[THIRTEENTH] = true;
-        score -= 8;
         if(intervals[DOM_SEVENTH]) {
-          verbose.push(`${options.minorSymbol}13 chord - 7 chord plus thirteenth`);
+          verbose.push(`+0  ${options.minorSymbol}13 chord - 7 chord plus thirteenth`);
           intervalName = '13';
         }
         else if(intervals[MAJ_SEVENTH]) {
-          verbose.push(`${options.minorSymbol}(${options.majorSymbol}13) chord - ${options.majorSymbol}7 chord plus thirteenth`);
+          verbose.push(`+0  ${options.minorSymbol}(${options.majorSymbol}13) chord - ${options.majorSymbol}7 chord plus thirteenth`);
           intervalName = `${options.majorSymbol}13`;
         }
         //note: no "m(add13)" chord. if seventh is missing, this is just a "6" chord that will be handled later.
@@ -629,153 +629,153 @@ function Chord(notes) {
       
       if(intervals[SIXTH] && !consumed[SIXTH]) {
         //we have a sixth that wasn't already identified as a thirteenth
-        verbose.push('found sixth');
+        score -= 9;
+        verbose.push('-9  found sixth');
         noteDetails.push({interval: '6', note: rootNote.transpose(SIXTH)});
         consumed[SIXTH] = true;
         intervalName = '6';
-        score -= 9;
       }
     }
     else {
-      verbose.push('found no third. this is a suspended chord');
+      verbose.push('+0  found no third. this is a suspended chord');
       quality = 'sus';
       
       if(intervals[FIFTH]) {
-        verbose.push('found fifth');
+        score += 10;
+        verbose.push('+10 found fifth');
         noteDetails.push({interval: '5', note: rootNote.transpose(FIFTH)});
         consumed[FIFTH] = true;
-        score += 10;
       }
       else {
         if(intervals[FLAT_FIFTH]) {
-          verbose.push('found flat fifth');
+          score -= 3;
+          verbose.push('-3  found flat fifth');
           noteDetails.push({interval: `${options.flatSymbol}5`, note: rootNote.transpose(FLAT_FIFTH)});
           consumed[FLAT_FIFTH] = true;
-          score -= 3;
           altFifth += `${options.flatSymbol}5`;
         }
         else if(intervals[SHARP_FIFTH]) {
-          verbose.push('found sharp fifth');
+          score -= 3;
+          verbose.push('-3  found sharp fifth');
           noteDetails.push({interval: `${options.sharpSymbol}5`, note: rootNote.transpose(SHARP_FIFTH)});
           consumed[SHARP_FIFTH] = true;
-          score -= 3;
           altFifth += `${options.sharpSymbol}5`;
         }
         else {
-          verbose.push('missing fifth');
-          omissions += 'no5';
           score -= 10;
+          verbose.push('-10 missing fifth');
+          omissions += 'no5';
         }
       }
       
       let isSus7 = false;
       if(intervals[DOM_SEVENTH] && !consumed[DOM_SEVENTH]) {
-        verbose.push('7sus chord - found dominant seventh');
+        score -= 5;
+        verbose.push('-5  7sus chord - found dominant seventh');
         noteDetails.push({interval: '7', note: rootNote.transpose(DOM_SEVENTH)});
         consumed[DOM_SEVENTH] = true;
         intervalName = '7';
-        score -= 5;
         isSus7 = true;
       }
       else if(intervals[MAJ_SEVENTH] && !consumed[MAJ_SEVENTH]) {
-        verbose.push(`${options.majorSymbol}7sus chord - found major seventh`);
+        score -= 5;
+        verbose.push(`-5  ${options.majorSymbol}7sus chord - found major seventh`);
         noteDetails.push({interval: `${options.majorSymbol}7`, note: rootNote.transpose(MAJ_SEVENTH)});
         consumed[MAJ_SEVENTH] = true;
         intervalName = `${options.majorSymbol}7`;
-        score -= 5;
         isSus7 = true;
       }
       
       if(isSus7 && intervals[NINTH] && !consumed[NINTH]) {
-        verbose.push('found ninth (second)');
+        score -= 6;
+        verbose.push('-6  found ninth (second)');
         noteDetails.push({interval: '9', note: rootNote.transpose(NINTH)});
         consumed[NINTH] = true;
-        score -= 6;
         if(intervals[DOM_SEVENTH]) {
-          verbose.push('9sus chord - 7sus chord plus ninth');
+          verbose.push('+0  9sus chord - 7sus chord plus ninth');
           intervalName = '9';
         }
         else if(intervals[MAJ_SEVENTH]) {
-          verbose.push(`${options.majorSymbol}9sus chord - ${options.majorSymbol}7sus chord plus ninth`);
+          verbose.push(`+0  ${options.majorSymbol}9sus chord - ${options.majorSymbol}7sus chord plus ninth`);
           intervalName = `${options.majorSymbol}9`;
         }
       }
       
       if(isSus7 && intervals[ELEVENTH] && !consumed[ELEVENTH]) {
-        verbose.push('found eleventh (fourth)');
+        score -= 7;
+        verbose.push('-7  found eleventh (fourth)');
         noteDetails.push({interval: '11', note: rootNote.transpose(ELEVENTH)});
         consumed[ELEVENTH] = true;
-        score -= 7;
         if(intervals[DOM_SEVENTH]) {
-          verbose.push('11sus chord - 7sus chord plus eleventh');
+          verbose.push('+0  11sus chord - 7sus chord plus eleventh');
           intervalName = '11';
         }
         else if(intervals[MAJ_SEVENTH]) {
-          verbose.push(`${options.majorSymbol}11sus chord - ${options.majorSymbol}7sus chord plus eleventh`);
+          verbose.push(`+0  ${options.majorSymbol}11sus chord - ${options.majorSymbol}7sus chord plus eleventh`);
           intervalName = `${options.majorSymbol}11`;
         }
       }
       
       if(isSus7 && intervals[THIRTEENTH] && !consumed[THIRTEENTH]) {
-        verbose.push('found thirteenth (sixth)');
+        score -= 8;
+        verbose.push('-8  found thirteenth (sixth)');
         noteDetails.push({interval: '13', note: rootNote.transpose(THIRTEENTH)});
         consumed[THIRTEENTH] = true;
-        score -= 8;
         if(intervals[DOM_SEVENTH]) {
-          verbose.push('13sus chord - 7sus chord plus thirteenth');
+          verbose.push('+0  13sus chord - 7sus chord plus thirteenth');
           intervalName = '13';
         }
         else if(intervals[MAJ_SEVENTH]) {
-          verbose.push(`${options.majorSymbol}13sus chord - ${options.majorSymbol}7sus chord plus thirteenth`);
+          verbose.push(`+0  ${options.majorSymbol}13sus chord - ${options.majorSymbol}7sus chord plus thirteenth`);
           intervalName = `${options.majorSymbol}13`;
         }
       }
       
       if(intervals[SIXTH] && !consumed[SIXTH]) {
-        verbose.push('found sixth - this is a 6sus chord');
+        score += 5;
+        verbose.push('+5  found sixth - this is a 6sus chord');
         noteDetails.push({interval: '6', note: rootNote.transpose(SIXTH)});
         consumed[SIXTH] = true;
         intervalName = '6';
-        score += 5;
         
         if(intervals[NINTH] && !consumed[NINTH]) {
-          verbose.push('found ninth - this is a 6/9sus chord');
+          score -= 3;
+          verbose.push('-3  found ninth - this is a 6/9sus chord');
           noteDetails.push({interval: '9', note: rootNote.transpose(NINTH)});
           consumed[NINTH] = true;
           intervalName = (options.useHtml ? '<span class="supsub"><span>6</span><span>9</span></span>' : '6/9');
-          score -= 3;
         }
         else if(intervals[ELEVENTH] && !consumed[ELEVENTH]) {
-          verbose.push('found eleventh - this is a 6/11sus chord');
+          score -= 4;
+          verbose.push('-4  found eleventh - this is a 6/11sus chord');
           noteDetails.push({interval: '11', note: rootNote.transpose(ELEVENTH)});
           consumed[ELEVENTH] = true;
           intervalName = (options.useHtml ? '<span class="supsub"><span>6</span><span>11</span></span>' : '6/11');
-          score -= 4;
         }
       }
       
       if(intervals[SECOND] && intervals[FOURTH] && !consumed[SECOND] && !consumed[FOURTH]) {
-        verbose.push('found second and fourth. this is a sus2/4');
+        score += 5;
+        verbose.push('+5  found second and fourth. this is a sus2/4');
         noteDetails.push({interval: '2', note: rootNote.transpose(SECOND)});
         noteDetails.push({interval: '4', note: rootNote.transpose(FOURTH)});
         consumed[SECOND] = true;
         consumed[FOURTH] = true;
         quality += (options.useHtml ? '<span class="supsub"><span>2</span><span>4</span></span>' : '2/4');
-        score += 5;
       }
       else if(intervals[SECOND] && !consumed[SECOND]) {
-        verbose.push('found second. this is a sus2');
+        score += 10;
+        verbose.push('+10 found second. this is a sus2');
         noteDetails.push({interval: '2', note: rootNote.transpose(SECOND)});
         consumed[SECOND] = true;
         quality += '2';
-        score += 10;
       }
       else if(intervals[FOURTH] && !consumed[FOURTH]) {
-        verbose.push('found fourth. this is a sus4');
+        score += 10;
+        verbose.push('+10 found fourth. this is a sus4');
         noteDetails.push({interval: '4', note: rootNote.transpose(FOURTH)});
         consumed[FOURTH] = true;
         quality += '4';
-        score += 10;
       }
     }
     
@@ -783,12 +783,12 @@ function Chord(notes) {
     for(let i = 1; i < INTERVAL_NAMES.length; i++) {
       if(intervals[i] && !consumed[i]) {
         let intervalName = INTERVAL_NAMES[i];
-        verbose.push(`found ${intervalName} we have not used`);
+        score -= 10;
+        verbose.push(`-10 found ${intervalName} we have not used`);
         noteDetails.push({interval: intervalName, note: rootNote.transpose(i)});
         if(intervalName.match(/^[a-z]/))
           intervalName = `(${intervalName})`;
         added += `add${intervalName}`;
-        score -= 10;
       }
     }
     
@@ -876,9 +876,12 @@ function Chord(notes) {
  *    Default: false
  *  
  */
-Chord.standardizeOptions = function(options) {
-  if('object' !== typeof options || options === null || options === undefined)
+Chord.standardizeOptions = function(_options) {
+  let options = null;
+  if('object' !== typeof _options || _options === null || _options === undefined)
     options = {};
+  else
+    options = {..._options}; //don't modify original options
   
   if(options.useFlats !== true)
     options.useFlats = false;
@@ -907,4 +910,6 @@ Chord.standardizeOptions = function(options) {
   options.flatSymbol  = options.unicodeAccidentals ? '\u266D' : 'b';
   
   options.halfDimSymbol = options.unicodeHalfDiminished ? '\u00F8' : '';
+  
+  return options;
 }

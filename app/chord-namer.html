@@ -8,8 +8,9 @@
 <script src="chord-namer.js"></script>
 <script>
   $(function() {
+    const options = {useFlats:false, unicodeAccidentals:true};
     $('#notes,#root,#bass').on('change', function() {
-      var useFlats = $('#useFlats')[0].checked;
+      options.useFlats = $('#useFlats')[0].checked;
       
       var notes = [];
       $('#notes .note input:checked').each(function(){ notes.push(new Note(this.id)) });
@@ -32,14 +33,14 @@
         bassNote = new Note(bassNote);
       
       var chord = new Chord(notes);
-      var names = chord.getNames({useFlats:useFlats}, rootNote, bassNote);
+      var names = chord.getNames(options, rootNote, bassNote);
       
       var output = '';
       names.forEach(function(nameInfo) {
-        output += `Root=${nameInfo.notes[0].note.getName({useFlats:useFlats})}  =>  ${nameInfo.name}\n`;
+        output += `Root=${nameInfo.notes[0].note.getName(options)}  =>  ${nameInfo.name}\n`;
         output += `  Score: ${nameInfo.score}\n`;
         output += `  Intervals found:\n`;
-        nameInfo.notes.forEach((note)=> output += `    ${note.interval}: ${note.note.getName({useFlats:useFlats})}\n`);
+        nameInfo.notes.forEach((note)=> output += `    ${note.interval}: ${note.note.getName(options)}\n`);
         
         output += `  Reason for name:\n`;
         nameInfo.verbose.forEach((s)=> output += `    ${s}\n`);
@@ -50,12 +51,12 @@
     });
     
     $('#useFlats').on('change', function() {
-      var useFlats = this.checked;
+      options.useFlats = this.checked;
       $('#notes .note label, #options #root>option, #options #bass>option').each(function() {
         var $this = $(this);
         var name = $this.text().trim();
         if(name !== '--')
-          $this.text(new Note($this.text().trim()).getName({useFlats:useFlats}));
+          $this.text(new Note($this.text().trim()).getName(options));
       });
       $('#notes').trigger('change');
     });
@@ -113,16 +114,16 @@
   <select id="root">
     <option value="">--</option>
     <option value="C" >C</option>
-    <option value="C#">C#</option>
+    <option value="C#">C&sharp;</option>
     <option value="D" >D</option>
-    <option value="D#">D#</option>
+    <option value="D#">D&sharp;</option>
     <option value="E" >E</option>
     <option value="F" >F</option>
-    <option value="F#">F#</option>
+    <option value="F#">F&sharp;</option>
     <option value="G" >G</option>
-    <option value="G#">G#</option>
+    <option value="G#">G&sharp;</option>
     <option value="A" >A</option>
-    <option value="A#">A#</option>
+    <option value="A#">A&sharp;</option>
     <option value="B" >B</option>
   </select>
   |
@@ -130,33 +131,33 @@
   <select id="bass">
     <option value="">--</option>
     <option value="C" >C</option>
-    <option value="C#">C#</option>
+    <option value="C#">C&sharp;</option>
     <option value="D" >D</option>
-    <option value="D#">D#</option>
+    <option value="D#">D&sharp;</option>
     <option value="E" >E</option>
     <option value="F" >F</option>
-    <option value="F#">F#</option>
+    <option value="F#">F&sharp;</option>
     <option value="G" >G</option>
-    <option value="G#">G#</option>
+    <option value="G#">G&sharp;</option>
     <option value="A" >A</option>
-    <option value="A#">A#</option>
+    <option value="A#">A&sharp;</option>
     <option value="B" >B</option>
   </select>
 </div>
 
 <div id="notes">
-  <div class="note"><label for="C" >C </label><input type="checkbox" id="C"  /></div>
-  <div class="note"><label for="C#">C#</label><input type="checkbox" id="C#" /></div>
-  <div class="note"><label for="D" >D </label><input type="checkbox" id="D"  /></div>
-  <div class="note"><label for="D#">D#</label><input type="checkbox" id="D#" /></div>
-  <div class="note"><label for="E" >E </label><input type="checkbox" id="E"  /></div>
-  <div class="note"><label for="F" >F </label><input type="checkbox" id="F"  /></div>
-  <div class="note"><label for="F#">F#</label><input type="checkbox" id="F#" /></div>
-  <div class="note"><label for="G" >G </label><input type="checkbox" id="G"  /></div>
-  <div class="note"><label for="G#">G#</label><input type="checkbox" id="G#" /></div>
-  <div class="note"><label for="A" >A </label><input type="checkbox" id="A"  /></div>
-  <div class="note"><label for="A#">A#</label><input type="checkbox" id="A#" /></div>
-  <div class="note"><label for="B" >B </label><input type="checkbox" id="B"  /></div>
+  <div class="note"><label for="C" >C       </label><input type="checkbox" id="C"  /></div>
+  <div class="note"><label for="C#">C&sharp;</label><input type="checkbox" id="C#" /></div>
+  <div class="note"><label for="D" >D       </label><input type="checkbox" id="D"  /></div>
+  <div class="note"><label for="D#">D&sharp;</label><input type="checkbox" id="D#" /></div>
+  <div class="note"><label for="E" >E       </label><input type="checkbox" id="E"  /></div>
+  <div class="note"><label for="F" >F       </label><input type="checkbox" id="F"  /></div>
+  <div class="note"><label for="F#">F&sharp;</label><input type="checkbox" id="F#" /></div>
+  <div class="note"><label for="G" >G       </label><input type="checkbox" id="G"  /></div>
+  <div class="note"><label for="G#">G&sharp;</label><input type="checkbox" id="G#" /></div>
+  <div class="note"><label for="A" >A       </label><input type="checkbox" id="A"  /></div>
+  <div class="note"><label for="A#">A&sharp;</label><input type="checkbox" id="A#" /></div>
+  <div class="note"><label for="B" >B       </label><input type="checkbox" id="B"  /></div>
 </div>
 
 
