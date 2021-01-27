@@ -26,7 +26,7 @@ let ChordPlayer = {
     
     //warn mobile users...
     if(navigator.userAgent.match(/android|blackberry|iphone|ipad|ipod|opera mini|iemobile/i))
-      setTimeout(() => alert("Hey there!\nJust so you know, this thing doesn't work all that well on mobile devices!"), 100);
+      setTimeout(() => alert("Hey there!\nJust so you know, this app doesn't work well on mobile devices!\nYou're free to try anyway, but don't say I didn't warn you!"), 100);
   },
   
   setUpPick() {
