@@ -8,6 +8,8 @@
 <script src="chord-namer.js"></script>
 <script>
   $(function() {
+    const audioPitches = 'E2 F2 Gb2 G2 Ab2 A2 Bb2 B2 C3 Db3 D3 Eb3 E3 F3 Gb3 G3 Ab3 A3 Bb3 B3 C4 Db4 D4 Eb4'.split(/ /).map(n => new Pitch(n));
+    
     const options = {useFlats:false, unicodeAccidentals:true};
     $('#notes,#root,#bass').on('change', function() {
       options.useFlats = $('#useFlats')[0].checked;
@@ -35,19 +37,22 @@
       var chord = new Chord(notes);
       var names = chord.getNames(options, rootNote, bassNote);
       
-      var output = '';
+      const $output = $('#output');
+      $output.empty();
       names.forEach(function(nameInfo) {
-        output += `Root=${nameInfo.notes[0].note.getName(options)}  =>  ${nameInfo.name}\n`;
-        output += `  Score: ${nameInfo.score}\n`;
-        output += `  Intervals found:\n`;
-        nameInfo.notes.forEach((note)=> output += `    ${note.interval}: ${note.note.getName(options)}\n`);
+        let details = '';
         
-        output += `  Reason for name:\n`;
-        nameInfo.verbose.forEach((s)=> output += `    ${s}\n`);
-        output += '\n';
+        details += `Root=${nameInfo.notes[0].note.getName(options)}  =>  ${nameInfo.name}\n`;
+        details += `  Score: ${nameInfo.score}\n`;
+        details += `  Intervals found:\n`;
+        nameInfo.notes.forEach((note)=> details += `    ${note.interval}: ${note.note.getName(options)}\n`);
+        
+        details += `  Reason for name:\n`;
+        nameInfo.verbose.forEach((s)=> details += `    ${s}\n`);
+        
+        $output.append($('<button class="play-chord" />').text('\u25B6\uFE0F').data('pitches', getPitchesToPlay(nameInfo, bassNote)));
+        $output.append($('<div class="chord-details" />').text(details));
       });
-      
-      $('#output').text(output);
     });
     
     $('#useFlats').on('change', function() {
@@ -60,6 +65,27 @@
       });
       $('#notes').trigger('change');
     });
+    
+    $('#output').on('click', '.play-chord', function(e) {
+      $('#audio > audio').each(function() { this.pause(); this.currentTime=0;})
+      const delay = 40;
+      const pitches = $(this).data('pitches').split(/ /);
+      for(let i = 0; i < pitches.length; i++)
+        setTimeout(()=>{$(`#audio-${pitches[i]}`)[0].play()}, delay * i);
+    });
+    
+    function getPitchesToPlay(chordNameInfo, bassNote) {
+      if(!bassNote)
+        bassNote = chordNameInfo.notes[0].note; //if no bass note, use root as bass note
+      
+      let bassPitchIdx = audioPitches.findIndex(p => p.getNote().equals(bassNote));
+      let availablePictches = audioPitches.filter((p,i) => bassPitchIdx <= i && i < bassPitchIdx + 12);
+      
+      let pitches = [];
+      chordNameInfo.notes.forEach(note => pitches.push(availablePictches.find(pitch => pitch.getNote().equals(note.note))));
+      pitches.sort((a,b)=>a.compareTo(b));
+      return pitches.map(p => p.getName({useFlats:true, unicodeAccidentals:false})).join(' ');
+    }
   });
 </script>
 <style>
@@ -98,6 +124,15 @@
   font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,sans-serif;
   white-space: pre;
   margin-top: 1.0em;
+}
+#output .play-chord {
+  cursor: pointer;
+}
+#output .chord-details {
+  margin-bottom: 2.0em;
+}
+#audio {
+  display: none;
 }
 #copyright {
   margin-top: 3.0em;
@@ -164,5 +199,31 @@
 <div id="output"></div>
 
 <div id="copyright">&copy; 2018 Kip Robinson. Details at <a href="https://github.com/kiprobinson/chordomatic">GitHub</a>.</div>
+<div id="audio">
+  <audio id="audio-E2"  preload="" src="audio/E2/00.mp3"></audio>
+  <audio id="audio-F2"  preload="" src="audio/E2/01.mp3"></audio>
+  <audio id="audio-Gb2" preload="" src="audio/E2/02.mp3"></audio>
+  <audio id="audio-G2"  preload="" src="audio/E2/03.mp3"></audio>
+  <audio id="audio-Ab2" preload="" src="audio/E2/04.mp3"></audio>
+  <audio id="audio-A2"  preload="" src="audio/A2/00.mp3"></audio>
+  <audio id="audio-Bb2" preload="" src="audio/A2/01.mp3"></audio>
+  <audio id="audio-B2"  preload="" src="audio/A2/02.mp3"></audio>
+  <audio id="audio-C3"  preload="" src="audio/A2/03.mp3"></audio>
+  <audio id="audio-Db3" preload="" src="audio/A2/04.mp3"></audio>
+  <audio id="audio-D3"  preload="" src="audio/D3/00.mp3"></audio>
+  <audio id="audio-Eb3" preload="" src="audio/D3/01.mp3"></audio>
+  <audio id="audio-E3"  preload="" src="audio/D3/02.mp3"></audio>
+  <audio id="audio-F3"  preload="" src="audio/D3/03.mp3"></audio>
+  <audio id="audio-Gb3" preload="" src="audio/D3/04.mp3"></audio>
+  <audio id="audio-G3"  preload="" src="audio/G3/00.mp3"></audio>
+  <audio id="audio-Ab3" preload="" src="audio/G3/01.mp3"></audio>
+  <audio id="audio-A3"  preload="" src="audio/G3/02.mp3"></audio>
+  <audio id="audio-Bb3" preload="" src="audio/G3/03.mp3"></audio>
+  <audio id="audio-B3"  preload="" src="audio/B3/00.mp3"></audio>
+  <audio id="audio-C4"  preload="" src="audio/B3/01.mp3"></audio>
+  <audio id="audio-Db4" preload="" src="audio/B3/02.mp3"></audio>
+  <audio id="audio-D4"  preload="" src="audio/B3/03.mp3"></audio>
+  <audio id="audio-Eb4" preload="" src="audio/B3/04.mp3"></audio>
+</div>
 </body>
 </html>

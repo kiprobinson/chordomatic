@@ -97,8 +97,10 @@ function Pitch(note, octave) {
    * @param options See standardizeOptions() for details on values for this parameter.
    */
   this.getName = function(options={}) {
-    return this.note.getName(options) + octave;
+    return this.note.getName(options) + this.octave;
   }
+  
+  this.getNote = function() { return this.note };
   
   this.toString = function() { return this.getName() };
   
