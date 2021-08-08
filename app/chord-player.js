@@ -115,7 +115,10 @@ let ChordPlayer = {
       e.preventDefault();
       $('#optionsOverlay').show();
     });
-    $('#optionsModal #optionsDismiss').on('click', function(e) {
+    $('#optionsModal').on('click', function(e) {
+      e.stopPropagation();
+    })
+    $('#optionsOverlay, #optionsModal #optionsDismiss').on('click', function(e) {
       $('#optionsOverlay').hide();
     });
     $('#optionsModal .option input, #optionsModal .option select').on('change', function(e) {
