@@ -907,6 +907,8 @@ Chord.standardizeOptions = function(_options) {
     options.unicodeHalfDiminished = false;
   if(options.useHtml !== true)
     options.useHtml = false;
+  if(options.leftHanded !== true)
+    options.leftHanded = false;
   
   options.sharpSymbol = options.unicodeAccidentals ? '\u266F' : '#';
   options.flatSymbol  = options.unicodeAccidentals ? '\u266D' : 'b';

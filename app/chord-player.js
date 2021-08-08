@@ -12,8 +12,21 @@ let ChordPlayer = {
     capo: 0,
     frets: [ null, null, null, null, null, null ],
     animating: false,
-    options: {unicodeAccidentals: true, omitMajor: true, useHtml: true}
+    options: {
+      leftHanded: false,
+      useFlats: false,
+      unicodeAccidentals: true,
+      majorSymbol: 'maj',
+      omitMajor: true,
+      minorSymbol: 'm',
+      omitMinor: false,
+      augSymbol: 'aug',
+      dimSymbol: 'dim',
+      unicodeHalfDiminished: false,
+      useHtml: true,
+    }
   },
+  
   
   init() {
     let $guitar = $('#guitar');
@@ -106,6 +119,7 @@ let ChordPlayer = {
       $('#optionsOverlay').hide();
     });
     $('#optionsModal .option input, #optionsModal .option select').on('change', function(e) {
+      ChordPlayer.state.options.leftHanded = $('#leftHanded')[0].checked;
       ChordPlayer.state.options.useFlats = $('#useFlats')[0].checked;
       ChordPlayer.state.options.unicodeAccidentals = $('#unicodeAccidentals')[0].checked;
       ChordPlayer.state.options.majorSymbol = $('#majorSymbol').val();
@@ -169,7 +183,7 @@ let ChordPlayer = {
       if(key === 'strings')
         ChordPlayer.state.strings = _state.strings.split(/ /).map(s => new Pitch(s));
       else if (key === 'options')
-        ChordPlayer.state.options = Object.assign({}, _state.options);
+        ChordPlayer.state.options = Chord.standardizeOptions({...ChordPlayer.state.options, ..._state.options});
       else if (key === 'frets')
         ChordPlayer.state.frets = _state.frets.slice();
       else if (key !== 'animating')
@@ -179,6 +193,7 @@ let ChordPlayer = {
     //update UI components
     $('#options #tuning').val(ChordPlayer.state.transpose);
     $('#options #capo').val(ChordPlayer.state.capo);
+    $('#leftHanded')[0].checked = ChordPlayer.state.options.leftHanded;
     $('#useFlats')[0].checked = ChordPlayer.state.options.useFlats;
     $('#unicodeAccidentals')[0].checked = ChordPlayer.state.options.unicodeAccidentals;
     $('#majorSymbol').val(ChordPlayer.state.options.majorSymbol);
@@ -190,7 +205,10 @@ let ChordPlayer = {
     $('#unicodeHalfDiminished').val(ChordPlayer.state.options.unicodeHalfDiminished.toString());
     
     //for setting instrument val, try to set it to the selected pitch list. if it's not found (i.e. val is null), set it to custom
-    $('#options #instrument').val(_state.strings);
+    const stringsCopy = [...ChordPlayer.state.strings]
+    if(ChordPlayer.state.options.leftHanded)
+      stringsCopy.reverse();
+    $('#options #instrument').val(stringsCopy.map(p => p.toString()).join(' '));
     if($('#options #instrument').val() === null)
       $('#options #instrument').val('CUSTOM');
   },
