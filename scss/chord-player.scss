@@ -1,10 +1,13 @@
 @use "sass:math";
 
+@import url('https://fonts.googleapis.com/css2?family=Milonga&family=Open+Sans:ital,wght@0,300;0,700;1,300;1,700&display=swap');
+
 $guitarAreaWidth: 400px;
 $guitarWidth: 240px;
 $pickAreaHeight: 100px;
 $headstockHeight: 50px;
 $noteLabelRadius: 12px;
+$boldWeight: 700;
 
 $mobileBreak: 1024px;
 $mobileGuitarWidth: $guitarAreaWidth - math.div($pickAreaHeight, 2);
@@ -14,16 +17,21 @@ $mobileHeadstockHeight: $headstockHeight*2;
   height: 100% * 2 * (math.pow(2, math.div((1-$n), 12)) - math.pow(2, math.div(-$n, 12)));
 }
 
-
 *, :after, :before {
   box-sizing: border-box;
+}
+input,textarea,select,button {
+  font-family:inherit;
+  font-size:inherit;
+  font-weight:inherit;
 }
 body {
   margin: 0;
   padding: 0;
   border: 0;
   overflow: hidden;
-  font-family: Arial,sans;
+  font-family: 'Open Sans',sans;
+  font-weight: 300;
   background-color: #222;
   color: white;
 }
@@ -64,7 +72,7 @@ a, a:visited {
   border-radius: $noteLabelRadius;
   overflow: hidden;
   font-size: $noteLabelRadius;
-  font-weight: bold;
+  font-weight: $boldWeight;
   
   //to center text vertically and horizontally because CSS is dumb
   line-height: $noteLabelRadius * 2;
@@ -240,8 +248,9 @@ a, a:visited {
   text-align: center;
   
   #title {
-    font-size: 2.0em;
-    font-weight: bold;
+    font-family: 'Milonga',sans-serif;
+    font-size: 2.5em;
+    font-weight: $boldWeight;
     margin-bottom: 10px;
   }
   
@@ -301,7 +310,7 @@ a, a:visited {
       padding: 10px;
     }
     .header {
-      font-weight: bold;
+      font-weight: $boldWeight;
       background-color: orange;
     }
     .body {
