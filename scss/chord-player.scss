@@ -1,4 +1,4 @@
-@import "node_modules/mathsass/dist/math";
+@use "sass:math";
 
 $guitarAreaWidth: 400px;
 $guitarWidth: 240px;
@@ -7,11 +7,11 @@ $headstockHeight: 50px;
 $noteLabelRadius: 12px;
 
 $mobileBreak: 1024px;
-$mobileGuitarWidth: $guitarAreaWidth - $pickAreaHeight/2;
+$mobileGuitarWidth: $guitarAreaWidth - math.div($pickAreaHeight, 2);
 $mobileHeadstockHeight: $headstockHeight*2;
 
 @mixin fretHeight($n){
-  height: 100% * 2 * (pow(2, (1-$n)/12) - pow(2, -$n/12));
+  height: 100% * 2 * (math.pow(2, math.div((1-$n), 12)) - math.pow(2, math.div(-$n, 12)));
 }
 
 
@@ -92,11 +92,11 @@ a, a:visited {
     margin: 0;
     top: 0;
     height: 100%;
-    left: ($guitarAreaWidth - $guitarWidth) / 2;
+    left: math.div(($guitarAreaWidth - $guitarWidth), 2);
     width: $guitarWidth;
     
     @media (max-width: $mobileBreak) {
-      left: ($guitarAreaWidth - $mobileGuitarWidth) / 2;
+      left: math.div(($guitarAreaWidth - $mobileGuitarWidth), 2);
       width: $mobileGuitarWidth;
     }
     
@@ -191,7 +191,7 @@ a, a:visited {
         background-size: contain;
         position: absolute;
         top: 0;
-        left: -$pickAreaHeight/2;
+        left: math.div(-$pickAreaHeight, 2);
         z-index: 200; //put it above the strings
       }
     }

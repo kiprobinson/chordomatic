@@ -2,13 +2,13 @@
   "name": "chordOMatic",
   "version": "1.0.0",
   "main": "Gulpfile.js",
-  "dependencies": {
-    "gulp": "^4.0.2",
-    "gulp-sass": "^4.1.0",
-    "mathsass": "^0.11.0"
-  },
   "scripts": {
     "build": "gulp",
     "watch": "gulp watch"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-sass": "^5.0.0",
+    "sass": "^1.37.5"
   }
 }
