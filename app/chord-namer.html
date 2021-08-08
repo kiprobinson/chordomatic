@@ -89,6 +89,24 @@
   });
 </script>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Milonga&family=Fira+Code:wght@400;600&family=Open+Sans:ital,wght@0,300;0,700;1,300;1,700&display=swap');
+
+body {
+  font-family: 'Open Sans',sans-serif;
+  font-weight: 300;
+}
+
+input,textarea,select,button {
+  font-family:inherit;
+  font-size:inherit;
+  font-weight:inherit;
+}
+
+#title {
+  font-family: 'Milonga',sans-serif;
+  font-size: 2.5em;
+  font-weight: 700;
+}
 #options {
   font-size: 30px;
 }
@@ -97,12 +115,9 @@
   width: 20px;
   margin-bottom: 30px;
 }
-#options select {
-  font: inherit;
-}
 #notes {
-  font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,sans-serif;
-  font-weight: bold;
+  font-family: "Fira Code",monospace,sans-serif;
+  font-weight: 600;
   font-size: 40px;
 }
 #notes .note {
@@ -121,7 +136,8 @@
   cursor: pointer;
 }
 #output {
-  font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,sans-serif;
+  font-family: "Fira Code",monospace,sans-serif;
+  font-weight:  400;
   white-space: pre;
   margin-top: 1.0em;
 }
@@ -140,7 +156,7 @@
 </style>
 </head>
 <body>
-<h1>Chord-o-matic Chord Namer</h1>
+<h1 id="title">Chord-o-matic Chord Namer</h1>
 
 <div id="options">
   Options: <input type="checkbox" id="useFlats" /> <label for="useFlats">Flats</label>
