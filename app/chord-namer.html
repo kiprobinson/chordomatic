@@ -6,6 +6,9 @@
 <title>Chord-o-matic Chord Namer</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="chord-namer.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Milonga&family=Fira+Code:wght@400;600&family=Open+Sans:ital,wght@0,300;0,700;1,300;1,700&display=block" rel="stylesheet" />
 <script>
   $(function() {
     const audioPitches = 'E2 F2 Gb2 G2 Ab2 A2 Bb2 B2 C3 Db3 D3 Eb3 E3 F3 Gb3 G3 Ab3 A3 Bb3 B3 C4 Db4 D4 Eb4'.split(/ /).map(n => new Pitch(n));
@@ -89,8 +92,6 @@
   });
 </script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Milonga&family=Fira+Code:wght@400;600&family=Open+Sans:ital,wght@0,300;0,700;1,300;1,700&display=swap');
-
 body {
   font-family: 'Open Sans',sans-serif;
   font-weight: 300;
