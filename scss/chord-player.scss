@@ -273,6 +273,15 @@ a, a:visited {
     }
   }
   
+  #instructions {
+    font-size: 3rem;
+    font-weight: 600;
+    text-align: left;
+    max-width: 600px;
+    margin: auto;
+    margin-top: 1rem;
+  }
+  
   #copyright {
     position: absolute;
     bottom: 0;
